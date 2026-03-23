@@ -1,0 +1,61 @@
+.keyboard {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: right;
+    gap: 15px;
+}
+
+.key {
+    padding: 14px;
+    font-size: 26px;
+    font-weight: bold;
+    border-radius: 16px;
+    border: none;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    /* transition: all 0.15s ease; */
+}
+
+/* Press effect */
+.key:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Clear button */
+.key:nth-child(10) {
+    background: #ff5252;
+    color: white;
+}
+
+/* Backspace button */
+.key:nth-child(12) {
+    background: #333;
+    color: white;
+}
+
+.select-values {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 20px;
+    max-height: 400px;
+    overflow: auto;
+}
+
+.select-values button {
+    padding: 18px;
+    font-size: 18px;
+    border: none;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.selected-val {
+    color: darkblue;
+    font-weight: bold;
+    background-color: black;
+}

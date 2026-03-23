@@ -1,0 +1,50 @@
+.date-container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+}
+
+.keys-section {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 15px;
+}
+
+.key-date {
+    padding: 10px;
+    font-size: 26px;
+    font-weight: bold;
+    border-radius: 16px;
+    border: none;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    /* transition: all 0.15s ease; */
+}
+
+.current {
+    background: black;
+    color: white;
+}
+
+.top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-section select {
+    padding: 6px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.centre {
+ display: flex;
+ gap: 10px;
+}
