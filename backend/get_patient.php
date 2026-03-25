@@ -31,7 +31,9 @@ LEFT JOIN conditions c
 LEFT JOIN villages v ON v.id = p.villageID
 GROUP BY p.patientId ORDER BY p.date DESC";
 
-$sql = "SELECT * FROM patients p, villages v WHERE p.villageID=v.id";
+$sql =
+  "SELECT * FROM patients p, villages v WHERE p.villageID=v.id AND p.patientID=" .
+  $patientID;
 
 $patientData = get_db_rows($conn, $sql);
 $patients = [];
@@ -63,6 +65,6 @@ foreach ($patientData as $patient) {
 
   array_push($patients, $patient);
 }
-echo json_encode($patients);
+echo json_encode($patients[0]);
 //echo json_encode($data);
 ?>

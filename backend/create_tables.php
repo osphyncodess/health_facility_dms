@@ -1,14 +1,14 @@
 <?php
-require_once "config.php";
+require_once "db.php";
 
 // Create Patients Table
+$conn->query("DROP TABLE IF EXISTS la_register");
+$conn->query("DROP TABLE IF EXISTS treatments_given");
 $conn->query("DROP TABLE IF EXISTS conditions");
 $conn->query("DROP TABLE IF EXISTS treatments");
 $conn->query("DROP TABLE IF EXISTS diseases");
 $conn->query("DROP TABLE IF EXISTS patients");
 $conn->query("DROP TABLE IF EXISTS villages");
-$conn->query("DROP TABLE IF EXISTS la_register");
-$conn->query("DROP TABLE IF EXISTS treatments_given");
 
 $disease_sql = "CREATE TABLE IF NOT EXISTS diseases (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,9 +38,10 @@ $la_register_sql = "CREATE TABLE IF NOT EXISTS la_register (
 ) ENGINE=InnoDB";
 
 $treatments_given = "CREATE TABLE IF NOT EXISTS treatments_given (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  conditionsID INT,
-  treatmentID INT
+  conditionsID INT NOT NULL,
+  treatmentID INT NOT NULL,
+  
+  PRIMARY KEY (conditionsID, treatmentID)
 ) ENGINE=InnoDB";
 
 $treatment_sql = "CREATE TABLE IF NOT EXISTS treatments (
@@ -58,7 +59,7 @@ $patients_sql = "CREATE TABLE IF NOT EXISTS patients (
     age INT NOT NULL,
     gender VARCHAR(50) NOT NULL,
     hiv_status VARCHAR(50) NOT NULL,
-    village VARCHAR(50) NOT NULL,
+    villageID INT NOT NULL,
 
     INDEX idx_serialNumber (serialNumber),
     INDEX idx_date (date),
@@ -71,14 +72,15 @@ $conditions_sql = "CREATE TABLE IF NOT EXISTS conditions (
     patientID INT,
     test VARCHAR(4),
     result VARCHAR(8),
-    code VARCHAR(3),
     diseaseID INT,
 
     INDEX idx_condition_patient (patientID),
 
     FOREIGN KEY (patientID)
         REFERENCES patients(patientId)
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+
+    UNIQUE (patientID, diseaseID)
 ) ENGINE=InnoDB";
 
 // Treatments Table

@@ -143,7 +143,7 @@ function DataEntry() {
   useEffect(() => {
     setTimeout(() => {
       api
-        .get("/get_villages.php")
+        .get("/get_villages_treatments_diseases.php")
         .then((res) => {
           console.log(res.data);
           const villages = res.data.villages.map((village) => ({
@@ -276,7 +276,7 @@ function DataEntry() {
     );
   };
 
-  const showAlert = (alertMessage, seconds = 3000, type) => {
+  const showAlert = (alertMessage, seconds = 3000, type = "error") => {
     setAlertMessage(alertMessage);
     setAlertType(type);
     setIsAlert(true);
@@ -372,6 +372,20 @@ function DataEntry() {
         setSubmitNow(false);
         return;
       }
+
+      var condArr = [];
+
+      diagnosisArray.forEach((d) => {
+        var exists = false;
+
+        if (condArr.includes(d.diagnosis[0])) {
+          showAlert("Dublicate Conditions detected.");
+          setSubmitNow(false);
+          return;
+        }
+
+        condArr.push(d.diagnosis[0]);
+      });
     });
 
     setSync(!sync);
@@ -412,7 +426,7 @@ function DataEntry() {
 
   return (
     <>
-      <div className="buttons">
+      <div className="buttonss">
         <button onClick={() => navigate("/")}>Back</button>
       </div>
 
@@ -445,9 +459,9 @@ function DataEntry() {
             </div>
 
             {addNewClicked && (
-              <div className="modal">
+              <div className="modals">
                 <MdOutlineCancel
-                  className="modal-close"
+                  className="modals-close"
                   onClick={handleAddNew}
                   color="red"
                   size={40}
@@ -487,9 +501,6 @@ function DataEntry() {
             <h3>Patient Data</h3>
             <div className="review-values">
               {formPatientData.map((d, index) => {
-                if (d.name === "village") {
-                  console.log(patientData[d.name]);
-                }
                 return (
                   <p
                     key={index}
@@ -498,7 +509,7 @@ function DataEntry() {
                     {d.label}:{" "}
                     <span className="review-span">
                       {d.name === "village"
-                        ? patientData[d.name][0]["label"]
+                        ? getLabelID(patientData[d.name], true)
                         : patientData[d.name]}
                     </span>
                   </p>

@@ -1,9 +1,9 @@
 <?php
-include "config.php";
+include "db.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-$stmt = $conn->prepare("INSERT INTO treatment (treatment)
+$stmt = $conn->prepare("INSERT INTO treatments (treatment)
 VALUES (?)");
 
 $stmt->bind_param("s", $data["treatment"]);

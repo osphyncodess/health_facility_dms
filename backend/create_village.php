@@ -1,5 +1,5 @@
 <?php
-include "config.php";
+include "db.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -25,4 +25,6 @@ try {
     "type" => "error",
   ]);
 }
+
+
 ?>

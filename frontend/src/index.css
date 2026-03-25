@@ -122,7 +122,7 @@ input[name="age"] {
   color: white;
 }
 
-.modal {
+.modals {
   position: fixed;
   top: 0;
   left: 0;
@@ -133,7 +133,7 @@ input[name="age"] {
   padding: 10px;
 }
 
-.modal-close {
+.modals-close {
   position: absolute;
   top: 2px;
   right: 2px;

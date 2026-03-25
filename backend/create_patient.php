@@ -1,62 +1,100 @@
 <?php
-include "config.php";
+include "db.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
-
-$stmt = $conn->prepare("INSERT INTO patients (serialNumber, date, name, age, gender, hiv_status, village)
-VALUES (?, ?, ?, ?, ?, ?, ?)");
 
 $p = $data["p"];
 $d = $data["d"];
 
-$stmt->bind_param(
-  "sssisss",
-  $p["serialNumber"],
-  $p["date"],
-  $p["name"],
-  $p["age"],
-  $p["gender"],
-  $p["hiv_status"],
-  $p["village"]
-);
+$villageID = explode(",", $p["village"][0][0])[0];
+
+$response = [
+  "message" => "Something went wrong",
+  "status" => false,
+  "type" => "error",
+];
 
 try {
-  $result = $stmt->execute();
-  $id = $conn->insert_id;
+  // 🔥 START TRANSACTION
+  $conn->begin_transaction();
 
-  $stmt2 = $conn->prepare("INSERT INTO conditions (patientID, test, result, diagnosis, code, treatment)
-VALUES (?, ?, ?, ?, ?, ?)");
+  // 👉 Insert Patient
+  $stmt = $conn->prepare("
+    INSERT INTO patients 
+    (serialNumber, date, name, age, gender, hiv_status, villageID)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  ");
 
-  foreach ($d as $c) {
-    $diagnosis = join(",", $c["diagnosis"]);
-    $treatment = join(",", $c["treatment"]);
-    $stmt2->bind_param(
-      "isssss",
-      $id,
-      $c["test"],
-      $c["result"],
-      $diagnosis,
-      $c["code"],
-      $treatment
+  $stmt->bind_param(
+    "sssissi",
+    $p["serialNumber"],
+    $p["date"],
+    $p["name"],
+    $p["age"],
+    $p["gender"],
+    $p["hiv_status"],
+    $villageID
+  );
+
+  $stmt->execute();
+  $patientID = $conn->insert_id;
+
+  // 👉 Prepare reusable statements
+  $conditionStmt = $conn->prepare("
+    INSERT INTO conditions (patientID, test, result, diseaseID)
+    VALUES (?, ?, ?, ?)
+  ");
+
+  $treatmentStmt = $conn->prepare("
+    INSERT INTO treatments_given (conditionsID, treatmentID)
+    VALUES (?, ?)
+  ");
+
+  // 👉 Insert Diagnoses
+  foreach ($d as $diagnosis) {
+    $diseaseID = explode(",", $diagnosis["diagnosis"][0][0])[0];
+
+    $conditionStmt->bind_param(
+      "issi",
+      $patientID,
+      $diagnosis["test"],
+      $diagnosis["result"],
+      $diseaseID
     );
 
-    $stmt2->execute();
+    $conditionStmt->execute();
+    $conditionID = $conn->insert_id;
+
+    // 👉 Insert Treatments
+    foreach ($diagnosis["treatment"] as $t) {
+      $treatmentID = explode(",", $t)[0];
+
+      $treatmentStmt->bind_param(
+        "ii",
+        $conditionID,
+        $treatmentID
+      );
+
+      $treatmentStmt->execute();
+    }
   }
 
-  echo json_encode([
-    "message" => "Patient created",
-    "status" => $result,
-    "record_id" => $id,
-    "type" => "info",
-  ]);
-} catch (Exception $error) {
-  echo json_encode([
-    "message" => $error->getMessage(),
-    "status" => false,
-    "type" => "error",
-    "d" => $d,
-  ]);
+  // ✅ COMMIT if everything succeeded
+  $conn->commit();
+
+  $response = [
+    "message" => "Patient created successfully",
+    "status" => true,
+    "record_id" => $patientID,
+    "type" => "success",
+  ];
+
+} catch (Exception $e) {
+  // ❌ ROLLBACK everything on error
+  $conn->rollback();
+
+  $response["message"] = $e->getMessage();
 }
 
-print_r($conn)
+echo json_encode($response);
 ?>
