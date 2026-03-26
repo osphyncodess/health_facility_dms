@@ -9,7 +9,6 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 const Loader = () => (
     <tbody>
-        {" "}
         <tr>
             <td>
                 <Skeleton height={20} width={"100%"} />
@@ -149,7 +148,7 @@ const HomePage = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            api.get("/get_patients.php")
+            api.get("patients/get_patients.php")
                 .then(res => {
                     console.log(res.data);
                     setPatients(res.data);
@@ -207,7 +206,7 @@ const HomePage = () => {
                             );
 
                             return (
-                                <tr key={patient.id}>
+                                <tr key={patient.patientID}>
                                     <td>{patient.serialNumber}</td>
                                     <td>{patient.date}</td>
                                     <td>{patient.name}</td>

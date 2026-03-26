@@ -1,37 +1,21 @@
 <?php
-include "header_info.php";
-include "db.php";
-include "functions.php";
+include "../header_info.php";
+include "../db.php";
+include "../functions.php";
 
 $patientID = null;
 if (isset($_GET["id"])) {
   $patientID = $_GET["id"];
 }
 
-$sql = "
-SELECT p.*, d.village, c.*
-FROM patients p
-RIGHT JOIN conditions c ON p.patientID = c.patientID
-";
+$sql =
+  "SELECT * FROM patients p, villages v WHERE p.villageID=v.id ORDER BY p.serialNumber";
 
-$sql = "SELECT 
-    p.*,
-    v.village,
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'id', c.id,
-            'test', c.test,
-            'result', c.result,
-            'diagnosis', c.diseaseID
-        )
-    ) AS conditions
-FROM patients p
-LEFT JOIN conditions c 
-    ON p.patientId = c.patientID
-LEFT JOIN villages v ON v.id = p.villageID
-GROUP BY p.patientId ORDER BY p.date DESC";
-
-$sql = "SELECT * FROM patients p, villages v WHERE p.villageID=v.id";
+if ($patientID !== null) {
+  $sql =
+    "SELECT * FROM patients p, villages v WHERE p.villageID=v.id AND p.patientID=" .
+    $patientID;
+}
 
 $patientData = get_db_rows($conn, $sql);
 $patients = [];
@@ -56,6 +40,29 @@ foreach ($patientData as $patient) {
     );
 
     $condition["treatments"] = $treatments;
+
+    // if condition is malaria
+    if ($condition["diseaseName"] === "Malaria") {
+      if ($patient["age"] < 5) {
+        $condition["diseaseCode"] = "32A";
+      } else {
+        if ($patient["gender"] === "FP") {
+          $condition["diseaseCode"] = "32C";
+          $condition["diseaseName"] = "Malaria in Pregnancy";
+        } else {
+          $condition["diseaseCode"] = "32B";
+        }
+      }
+    }
+
+    // if condition is GE
+    if ($condition["diseaseName"] === "GE") {
+      if ($patient["age"] < 5) {
+        $condition["diseaseCode"] = "14A";
+      } else {
+        $condition["diseaseCode"] = "14B";
+      }
+    }
     array_push($conditions, $condition);
   }
 

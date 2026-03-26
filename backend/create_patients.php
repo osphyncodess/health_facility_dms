@@ -13,7 +13,7 @@ $stmt->bind_param(
   "sssisss",
   $p["serialNumber"],
   $p["date"],
-  $p["name"],
+  trim($p["name"]),
   $p["age"],
   $p["gender"],
   $p["hiv_status"],

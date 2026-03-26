@@ -6,7 +6,8 @@ $data = json_decode(file_get_contents("php://input"), true);
 $stmt = $conn->prepare("INSERT INTO villages (village)
 VALUES (?)");
 
-$stmt->bind_param("s", $data["village"]);
+$village = trim($data["village"]);
+$stmt->bind_param("s", $village);
 
 try {
   $result = $stmt->execute();
@@ -20,11 +21,10 @@ try {
   ]);
 } catch (Exception $error) {
   echo json_encode([
-    "message" => $data["village"] . " already exists!;",
+    "message" => trim($data["village"]) . " already exists!;",
     "status" => false,
     "type" => "error",
   ]);
 }
-
 
 ?>

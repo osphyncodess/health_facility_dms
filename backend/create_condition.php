@@ -1,13 +1,16 @@
 <?php
-include("header_info.php");
-include("db.php");
+include "header_info.php";
+include "db.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
 $stmt = $conn->prepare("INSERT INTO diseases (diseaseName, diseaseCode)
 VALUES (?, ?)");
 
-$stmt->bind_param("ss", $data["condition"], $data["code"]);
+$condition = trim($data["condition"]);
+$code = trim($data["code"]);
+
+$stmt->bind_param("ss", $condition, $code);
 
 try {
   $result = $stmt->execute();

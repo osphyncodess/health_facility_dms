@@ -1,5 +1,5 @@
 <?php
-include "db.php";
+include "../db.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -25,11 +25,13 @@ try {
     VALUES (?, ?, ?, ?, ?, ?, ?)
   ");
 
+  $name = trim($p["name"]);
+  
   $stmt->bind_param(
     "sssissi",
     $p["serialNumber"],
     $p["date"],
-    $p["name"],
+    $name,
     $p["age"],
     $p["gender"],
     $p["hiv_status"],
@@ -52,7 +54,7 @@ try {
 
   // 👉 Insert Diagnoses
   foreach ($d as $diagnosis) {
-    $diseaseID = explode(",", $diagnosis["diagnosis"][0][0])[0];
+    $diseaseID = explode(",", $diagnosis["diagnosis"][0])[0];
 
     $conditionStmt->bind_param(
       "issi",
@@ -69,11 +71,7 @@ try {
     foreach ($diagnosis["treatment"] as $t) {
       $treatmentID = explode(",", $t)[0];
 
-      $treatmentStmt->bind_param(
-        "ii",
-        $conditionID,
-        $treatmentID
-      );
+      $treatmentStmt->bind_param("ii", $conditionID, $treatmentID);
 
       $treatmentStmt->execute();
     }
@@ -88,7 +86,6 @@ try {
     "record_id" => $patientID,
     "type" => "success",
   ];
-
 } catch (Exception $e) {
   // ❌ ROLLBACK everything on error
   $conn->rollback();

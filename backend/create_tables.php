@@ -53,7 +53,7 @@ $treatment_sql = "CREATE TABLE IF NOT EXISTS treatments (
 
 $patients_sql = "CREATE TABLE IF NOT EXISTS patients (
     patientID INT AUTO_INCREMENT PRIMARY KEY,
-    serialNumber VARCHAR(50) NOT NULL UNIQUE,
+    serialNumber INT NOT NULL UNIQUE,
     date DATE NOT NULL,
     name VARCHAR(100) NULL,
     age INT NOT NULL,

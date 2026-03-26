@@ -13,18 +13,33 @@ import api from "../../api";
 const PatientDetails = () => {
     const { id } = useParams();
     const [patient, setPatient] = useState({});
+    const [conditions, setConditions] = useState(null);
+    const [currIndex, setCurrIndex] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
         setTimeout(() => {
-            api.get(`/get_patient.php?id=${id}`)
+            api.get(`/patients/get_patients.php?id=${id}`)
                 .then(res => {
-                 console.log(res.data)
-                    setPatient(res.data);
+                    const patient = res.data[0];
+                    console.log(patient.conditions[0]);
+                    setConditions(patient.conditions);
+                    setPatient(patient);
                 })
                 .catch(err => console.log(err));
-        }, 0);
+        }, 1);
     }, []);
+
+    const handleConditionClick = index => {
+        const buttons = document.querySelectorAll(".conditions-btns");
+        buttons.forEach(btn => btn.classList.remove("btn-primary"));
+
+        document
+            .getElementById(`condition-btn-${index}`)
+            .classList.add("btn-primary");
+        console.log(buttons);
+        setCurrIndex(index);
+    };
 
     return (
         <div className="review-container patient-details">
@@ -95,67 +110,80 @@ const PatientDetails = () => {
                             className="toggle"
                             style={{ display: "flex", gap: "5px" }}
                         >
-                            <button
-                                style={{ width: "90px" }}
-                                className="btn btn-secondary"
-                            >
-                                1
-                            </button>
-                            <button style={{ width: "90px" }} className="btn">
-                                2
-                            </button>
-                            <button style={{ width: "90px" }} className="btn">
-                                3
-                            </button>
+                            {conditions &&
+                                conditions.length > 1 &&
+                                conditions.map((c, index) => (
+                                    <button
+                                        key={index}
+                                        style={{ width: "90px" }}
+                                        className={
+                                            index === currIndex
+                                                ? "btn conditions-btns btn-primary"
+                                                : "btn conditions-btns"
+                                        }
+                                        onClick={() =>
+                                            handleConditionClick(index)
+                                        }
+                                        id={`condition-btn-${index}`}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
                         </div>
                     </div>
 
-                    <div className="diagnosis-body">
-                        <div className="lab">
-                            <div className="title">Lab Info</div>
-                            <div className="val-label">
-                                <div className="label">Test Conducted</div>
-                                <div className="value">MRDT</div>
+                    {conditions && (
+                        <div className="diagnosis-body">
+                            <div className="lab">
+                                <div className="title">Lab Info</div>
+                                <div className="val-label">
+                                    <div className="label">Test Conducted</div>
+                                    <div className="value">
+                                        {conditions[currIndex].test}
+                                    </div>
+                                </div>
+                                <div className="val-label">
+                                    <div className="label">Result</div>
+                                    <div className="value">
+                                        {conditions[currIndex].result}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="val-label">
-                                <div className="label">Result</div>
-                                <div className="value">Negative</div>
-                            </div>
-                        </div>
-                        <div className="condition">
-                            <div className="title">Disease / Code</div>
+                            <div className="condition">
+                                <div className="title">Disease / Code</div>
 
-                            <div className="body">
-                                <div className="val-label">
-                                    <div className="label">Condition</div>
-                                    <div className="value">
-                                        Malaria In Pregnancy
+                                <div className="body">
+                                    <div className="val-label">
+                                        <div className="label">Condition</div>
+                                        <div className="value">
+                                            {conditions[currIndex].diseaseName}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="val-label">
-                                    <div className="label">Code</div>
-                                    <div className="value">32A</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="treatments">
-                            <div className="title">Treatments</div>
-                            <div className="values val-label">
-                                <div className="value0">
-                                    <div className="bullet"></div>
-                                    <div className="value">
-                                        Paracetamo 125mg
-                                    </div>
-                                </div>
-                                <div className="value0">
-                                    <div className="bullet"></div>
-                                    <div className="value">
-                                        Amoxycillin Lativa 500mg
+                                    <div className="val-label">
+                                        <div className="label">Code</div>
+                                        <div className="value">
+                                            {conditions[currIndex].diseaseCode}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <div className="treatments">
+                                <div className="title">Treatments</div>
+                                <div className="values val-label">
+                                    {conditions[currIndex].treatments.map(
+                                        (t, index) => (
+                                            <div key={index} className="value0">
+                                                <div className="bullet"></div>
+                                                <div className="value">
+                                                    {t.treatment}
+                                                </div>
+                                            </div>
+                                        )
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>
