@@ -16,78 +16,83 @@ const NotFoundPage = lazy(() => import("../../pages/NotFoundPage"));
 const ConditionForm = lazy(() => import("../../components/ConditionForm"));
 const VillageForm = lazy(() => import("../../components/VillageForm"));
 const TreatmentForm = lazy(() => import("../../components/TreatmentForm"));
+const SwipePage = lazy(() => import("../../components/SwipePage"));
 
 export const routes = [
-  {
-    element: <MainLayout />,
-    children: [
-      {
-        path: ROUTES.ENTRY.OPR_ENTRY,
-        element: <DataEntry />,
-      },
-      {
-        path: ROUTES.HOME,
-        element: <HomePage />,
-      },
-      {
-        path: "/patients/",
-        element: <HomePage />,
-      },
-      {
-        path: ROUTES.ENTRY.DISEASE_CREATE,
-        element: <ConditionForm />,
-      },
-      {
-        path: ROUTES.ENTRY.VILLAGE_CREATE,
-        element: <VillageForm />,
-      },
-      {
-        path: ROUTES.ENTRY.TREATMENT_CREATE,
-        element: <TreatmentForm />,
-      },
-      {
-        path: "patients/:id/",
-        element: <PatientDetails />,
-      },
-    ],
-  },
-  //   {
-  //     element: <AuthLayout />,
-  //     children: [
-  //       {
-  //         path: ROUTES.AUTH.LOGIN,
-  //         element: <LoginPage />,
-  //       },
-  //       {
-  //         path: ROUTES.AUTH.REGISTER,
-  //         element: <RegisterPage />,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     path: ROUTES.DASHBOARD.ROOT,
-  //     element: (
-  //       <ProtectedRoute>
-  //         <DashboardLayout />
-  //       </ProtectedRoute>
-  //     ),
-  //     children: [
-  //       {
-  //         index: true,
-  //         element: <DashboardPage />,
-  //       },
-  //       {
-  //         path: "users",
-  //         element: <UsersPage />,
-  //       },
-  //       {
-  //         path: "settings",
-  //         element: <SettingsPage />,
-  //       },
-  //     ],
-  //   },
-  {
-    path: "*",
-    element: <NotFoundPage />,
-  },
+    {
+        element: <MainLayout />,
+        children: [
+            {
+                path: ROUTES.ENTRY.OPR_ENTRY,
+                element: <DataEntry />
+            },
+            {
+                path: ROUTES.HOME,
+                element: <HomePage />
+            },
+            {
+                path: "/patients/",
+                element: <HomePage />
+            },
+            {
+                path: "/swipe/",
+                element: <SwipePage />
+            },
+            {
+                path: ROUTES.ENTRY.DISEASE_CREATE,
+                element: <ConditionForm />
+            },
+            {
+                path: ROUTES.ENTRY.VILLAGE_CREATE,
+                element: <VillageForm />
+            },
+            {
+                path: ROUTES.ENTRY.TREATMENT_CREATE,
+                element: <TreatmentForm />
+            },
+            {
+                path: "patients/:id/",
+                element: <PatientDetails />
+            }
+        ]
+    },
+    //   {
+    //     element: <AuthLayout />,
+    //     children: [
+    //       {
+    //         path: ROUTES.AUTH.LOGIN,
+    //         element: <LoginPage />,
+    //       },
+    //       {
+    //         path: ROUTES.AUTH.REGISTER,
+    //         element: <RegisterPage />,
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     path: ROUTES.DASHBOARD.ROOT,
+    //     element: (
+    //       <ProtectedRoute>
+    //         <DashboardLayout />
+    //       </ProtectedRoute>
+    //     ),
+    //     children: [
+    //       {
+    //         index: true,
+    //         element: <DashboardPage />,
+    //       },
+    //       {
+    //         path: "users",
+    //         element: <UsersPage />,
+    //       },
+    //       {
+    //         path: "settings",
+    //         element: <SettingsPage />,
+    //       },
+    //     ],
+    //   },
+    {
+        path: "*",
+        element: <NotFoundPage />
+    }
 ];

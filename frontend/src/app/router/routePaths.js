@@ -11,6 +11,7 @@ export const ROUTES = {
     DISEASE_CREATE: "/diseases/create",
     VILLAGE_CREATE: "/villages/create",
     TREATMENT_CREATE: "/treatments/create",
+    SWIPE: "/swipe"
   },
 
   DASHBOARD: {

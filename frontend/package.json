@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.13.6",
     "bootstrap": "^5.3.8",
+    "framer-motion": "^12.38.0",
     "react": "^19.2.0",
     "react-content-loader": "^7.1.2",
     "react-dom": "^19.2.0",
@@ -22,6 +23,7 @@
     "react-progressbar": "^15.4.1",
     "react-router-dom": "^7.13.1",
     "react-spinners": "^0.17.0",
+    "react-swipeable": "^7.0.2",
     "react-top-loading-bar": "^3.0.2"
   },
   "devDependencies": {

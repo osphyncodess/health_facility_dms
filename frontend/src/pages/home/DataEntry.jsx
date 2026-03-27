@@ -14,7 +14,39 @@ import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 
+
 function DataEntry() {
+    const initialState = {
+        villages: [],
+        diseases: [],
+        treatments: [],
+
+        patientData: null,
+        diagnosisData: null,
+        diagnosisArray: [],
+
+        isPatientData: true,
+        submit: false,
+        step: 0,
+        currentText: "Patient Details",
+
+        reviewClicked: false,
+        addNewClicked: false,
+        isDiagnosisEdit: false,
+        editIndex: null,
+
+        isLoading: false,
+        loadingMessage: "",
+
+        submitNow: false,
+        sync: false,
+
+        isAlert: false,
+        alertMessage: "",
+        alertType: "error",
+
+        lastOpd: null
+    };
     const [villages, setVillages] = useState([]);
     const [diseases, setDiseases] = useState([]);
     const [treatments, setTreatments] = useState([]);
@@ -140,6 +172,7 @@ function DataEntry() {
     const [sync, setSync] = useState(false);
     const [alertType, setAlertType] = useState("error");
     const [lastOpd, setLastOpd] = useState(null);
+    const [currObj, setCurrObj] = useState(null);
 
     useEffect(() => {
         setTimeout(() => {
@@ -178,10 +211,9 @@ function DataEntry() {
             .then(res => {
                 console.log(res.data.last_opd);
                 console.log(initialPatentData);
-                if(res.data.last_opd){
-                 initialPatentData["serialNumber"] = res.data.last_opd + 1;
+                if (res.data.last_opd) {
+                    initialPatentData["serialNumber"] = res.data.last_opd + 1;
                 }
-                
             })
             .catch(err => console.log(err));
     }, []);
@@ -466,7 +498,7 @@ function DataEntry() {
     }, [submitNow, sync]);
 
     return (
-        <>
+        <div>
             <div className="buttonss">
                 <button onClick={() => navigate("/")}>Back</button>
             </div>
@@ -588,7 +620,7 @@ function DataEntry() {
                     </div>
                 )}
             </div>
-        </>
+        </div>
     );
 }
 
