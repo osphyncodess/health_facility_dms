@@ -19,7 +19,7 @@ const PatientDetails = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            api.get(`/patients/get_patients.php?id=${id}`)
+            api.get(`/patients/get_all.php?id=${id}`)
                 .then(res => {
                     const patient = res.data[0];
                     console.log(patient.conditions[0]);

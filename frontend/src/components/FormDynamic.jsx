@@ -9,6 +9,8 @@ import "../assets/css/data_entry.css";
 import Alert from "./Alert";
 import { getLabelID } from "../api";
 import { useSwipeable } from "react-swipeable";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FormDynamic = ({
     formData,
@@ -115,21 +117,32 @@ const FormDynamic = ({
     };
 
     const handlers = useSwipeable({
-        onSwipedLeft: () => {
+        onSwipedLeft: eventData => {
+            eventData.event.stopPropagation();
             console.log("Next page");
             //alert(JSON.stringfy(formData));
-            handleNext() // forward
+            //alert(currentControl.name);
+
+            if (currentControl.name == formData[formData.length - 1].name) {
+                handleSubmit(form);
+            }
+            handleNext(); // forward
         },
-        onSwipedRight: () => {
+        onSwipedRight: eventData => {
+            eventData.event.stopPropagation();
             console.log("Previous page");
-            alert("Swiped Left"); // back
+
+            step === 0 ? backArrow() : setStep(step - 1);
         },
+        delta: 50, // 👈 balanced sensitivity
+        swipeDuration: 500,
+        preventScrollOnSwipe: true,
         preventDefaultTouchmoveEvent: true,
         trackMouse: true // also works on desktop
     });
 
     return (
-        <div {...handlers} style={{ height: "100vh", backgroundColor: "red" }}>
+        <div {...handlers} style={{ height: "100vh" }}>
             {isAlert && <Alert message={alertMessage} type="error" />}
             <form
                 onSubmit={Submits}

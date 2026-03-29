@@ -13,7 +13,7 @@ import Alert from "../../components/Alert";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-
+import { useSwipeable } from "react-swipeable";
 
 function DataEntry() {
     const initialState = {
@@ -497,6 +497,24 @@ function DataEntry() {
         setSubmitNow(false);
     }, [submitNow, sync]);
 
+    const handlers = useSwipeable({
+        onSwipedLeft: eventData => {
+            eventData.event.stopPropagation();
+            handleReview();
+        },
+        onSwipedRight: eventData => {
+            eventData.event.stopPropagation();
+            console.log("Previous page");
+
+            handleNotFirstBackArrow();
+        },
+        delta: 50, // 👈 balanced sensitivity
+        swipeDuration: 500,
+        preventScrollOnSwipe: true,
+        preventDefaultTouchmoveEvent: true,
+        trackMouse: true // also works on desktop
+    });
+
     return (
         <div>
             <div className="buttonss">
@@ -509,7 +527,12 @@ function DataEntry() {
                 {isLoading && <Spinner Message={loadingMessage} />}
                 {/* </a> */}
                 {!submit && !isPatientData && (
-                    <div className="review-container">
+                    <div
+                        {...handlers}
+                        style={{ height: "100vh" }}
+                        onDoubleClick={() => handleAddNew(true)}
+                        className="review-container"
+                    >
                         <div className="diagnosisData">
                             <DiagnosisTable
                                 formDiagnosisData={formDiagnosisData}

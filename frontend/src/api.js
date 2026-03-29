@@ -7,12 +7,41 @@ const api = axios.create({
     headers: {
         "Content-Type": "application/json"
     }
+    //withCredentials: true
 });
+
+api.interceptors.request.use(config => {
+    const token = localStorage.getItem("access_token");
+    if (token) config.headers.Authorization = "Bearer " + token;
+    return config;
+});
+
+// Auto refresh
+api.interceptors.response.use(
+    res => res,
+    async err => {
+        if (err.response?.status === 401) {
+            const res = await axios.get(
+                "http://localhost:8000/auth/refresh.php",
+                {
+                    withCredentials: true
+                }
+            );
+
+            localStorage.setItem("access_token", res.data.access_token);
+
+            err.config.headers.Authorization =
+                "Bearer " + res.data.access_token;
+            return axios(err.config);
+        }
+        return Promise.reject(err);
+    }
+);
 
 export default api;
 
 export const createPatient = async (patient, returnText = false) => {
-    const res = await fetch(`${API_URL}/patients/create_patient.php`, {
+    const res = await fetch(`${API_URL}/patients/create.php`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

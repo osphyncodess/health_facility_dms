@@ -1,6 +1,10 @@
 <?php
-include "header_info.php";
-include "db.php";
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Content-Type: application/json");
+
+include "config/db.php";
 
 $table_names = ["villages", "treatments", "diseases"];
 $table_order = ["village", "treatment", "diseaseName"];

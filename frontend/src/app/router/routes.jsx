@@ -5,34 +5,57 @@ import DataEntry from "../../pages/home/DataEntry";
 import PatientDetails from "../../pages/home/PatientDetails";
 // import AuthLayout from "../../layouts/AuthLayout";
 // import DashboardLayout from "../../layouts/DashboardLayout";
-// import ProtectedRoute from "../../components/ProtectedRoute";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import AdminRoute from "../../components/AdminRoute";
 const HomePage = lazy(() => import("../../pages/home/HomePage"));
-// const LoginPage = lazy(() => import("../../pages/auth/LoginPage"));
-// const RegisterPage = lazy(() => import("../../pages/auth/RegisterPage"));
-// const DashboardPage = lazy(() => import("../../pages/dashboard/DashboardPage"));
-// const UsersPage = lazy(() => import("../../pages/dashboard/UsersPage"));
-// const SettingsPage = lazy(() => import("../../pages/dashboard/SettingsPage"));
+
 const NotFoundPage = lazy(() => import("../../pages/NotFoundPage"));
 const ConditionForm = lazy(() => import("../../components/ConditionForm"));
 const VillageForm = lazy(() => import("../../components/VillageForm"));
 const TreatmentForm = lazy(() => import("../../components/TreatmentForm"));
 const SwipePage = lazy(() => import("../../components/SwipePage"));
+const Login = lazy(() => import("../../pages/Login"));
+const CreateUser = lazy(() => import("../../pages/CreateUser"));
 
 export const routes = [
     {
         element: <MainLayout />,
         children: [
             {
-                path: ROUTES.ENTRY.OPR_ENTRY,
-                element: <DataEntry />
+                path: "/login",
+                element: <Login />
             },
             {
-                path: ROUTES.HOME,
-                element: <HomePage />
+                path: "/users/create",
+                element: (
+                    <AdminRoute>
+                        <CreateUser />
+                    </AdminRoute>
+                )
+            },
+            {
+                path: ROUTES.ENTRY.OPR_ENTRY,
+                element: (
+                    <ProtectedRoute>
+                        <DataEntry />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: ROUTES.HOME || "/patients/",
+                element: (
+                    <ProtectedRoute>
+                        <HomePage />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "/patients/",
-                element: <HomePage />
+                element: (
+                    <ProtectedRoute>
+                        <HomePage />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "/swipe/",
@@ -40,19 +63,33 @@ export const routes = [
             },
             {
                 path: ROUTES.ENTRY.DISEASE_CREATE,
-                element: <ConditionForm />
+                element: (
+                    <ProtectedRoute>
+                        <ConditionForm />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: ROUTES.ENTRY.VILLAGE_CREATE,
-                element: <VillageForm />
+                element: (
+                    <ProtectedRoute>
+                        <VillageForm />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: ROUTES.ENTRY.TREATMENT_CREATE,
-                element: <TreatmentForm />
+                element: (
+                    <ProtectedRoute>
+                        <TreatmentForm />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "patients/:id/",
-                element: <PatientDetails />
+                element: <ProtectedRoute>
+                        <PatientDetails />
+                    </ProtectedRoute>
             }
         ]
     },

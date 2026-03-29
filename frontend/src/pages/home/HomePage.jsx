@@ -148,7 +148,7 @@ const HomePage = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            api.get("patients/get_patients.php")
+            api.get("patients/get_all.php")
                 .then(res => {
                     console.log(res.data);
                     setPatients(res.data);

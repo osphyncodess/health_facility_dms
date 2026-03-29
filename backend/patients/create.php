@@ -1,8 +1,15 @@
 <?php
-include "../db.php";
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Content-Type: application/json");
+
+include "../config/db.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
+echo json_encode($data);
+exit;
 $p = $data["p"];
 $d = $data["d"];
 
@@ -26,7 +33,7 @@ try {
   ");
 
   $name = trim($p["name"]);
-  
+
   $stmt->bind_param(
     "sssissi",
     $p["serialNumber"],
