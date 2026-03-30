@@ -1,5 +1,6 @@
 <?php
-require_once "../config/db.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
+require_once "config/db.php";
 
 // Drop tables if exist
 $conn->query("DROP TABLE IF EXISTS la_register");
@@ -9,16 +10,9 @@ $conn->query("DROP TABLE IF EXISTS treatments");
 $conn->query("DROP TABLE IF EXISTS diseases");
 $conn->query("DROP TABLE IF EXISTS patients");
 $conn->query("DROP TABLE IF EXISTS villages");
-$conn->query("DROP TABLE IF EXISTS users");
+//$conn->query("DROP TABLE IF EXISTS users");
 
 // Users table (needed for created_by reference)
-$users_sql = "CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB";
 
 // Diseases Table
 $disease_sql = "CREATE TABLE IF NOT EXISTS diseases (
@@ -107,7 +101,7 @@ $treatments_given = "CREATE TABLE IF NOT EXISTS treatments_given (
 ) ENGINE=InnoDB";
 
 // Execute all queries
-$conn->query($users_sql);
+//$conn->query($users_sql);
 $conn->query($patients_sql);
 $conn->query($disease_sql);
 $conn->query($village_sql);

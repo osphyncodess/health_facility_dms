@@ -1,15 +1,12 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Content-Type: application/json");
-
 require_once "../config/db.php";
 require_once "../config/jwt.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-$stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
+$stmt = $conn->prepare(
+  "SELECT id, name, email, created_at, role, password FROM users WHERE email=?"
+);
 $stmt->bind_param("s", $data["email"]);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();

@@ -1,15 +1,11 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Content-Type: application/json");
-
+require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
 include "../config/db.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
 echo json_encode($data);
-exit;
+exit();
 $p = $data["p"];
 $d = $data["d"];
 

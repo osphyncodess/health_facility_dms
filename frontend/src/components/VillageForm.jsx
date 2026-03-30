@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { createRecords } from "../api";
+import { AuthContext } from "../auth/AuthContext";
+
 const VillageForm = () => {
+    const { user } = useContext(AuthContext);
     const [form, setForm] = useState({
-        village: ""
+        village: "",
+        user: user.id
     });
 
     const handleChange = e => {
@@ -15,13 +19,15 @@ const VillageForm = () => {
             alert("Please enter village");
             return;
         }
-        createRecords(form, "village", false).then(res => {
+
+        createRecords(form, "villages/create", false).then(res => {
             console.log(res);
             alert(res.message);
 
             if (res.status) {
                 setForm({
-                    village: ""
+                    village: "",
+                    user: user.id
                 });
             }
         });

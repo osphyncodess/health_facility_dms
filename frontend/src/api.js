@@ -6,8 +6,8 @@ const api = axios.create({
     baseURL: API_URL,
     headers: {
         "Content-Type": "application/json"
-    }
-    //withCredentials: true
+    },
+    withCredentials: true
 });
 
 api.interceptors.request.use(config => {
@@ -57,18 +57,19 @@ export const createPatient = async (patient, returnText = false) => {
 };
 
 export const createRecords = async (data, url, returnText = false) => {
-    const res = await fetch(`${API_URL}/create_${url}.php`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    });
+    try {
+        const res = await api.post(`${url}.php`, data); // Axios automatically JSON.stringifies
 
-    if (returnText) {
-        return res.text();
-    } else {
-        return res.json();
+        return res.data; // Axios doesn't have res.text(), res.data contains response
+    } catch (error) {
+        // Optional: handle error consistently
+        if (error.response) {
+            // Server responded with status code outside 2xx
+            throw error.response.data;
+        } else {
+            // Network error or other
+            throw error;
+        }
     }
 };
 

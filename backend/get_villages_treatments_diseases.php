@@ -1,9 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Content-Type: application/json");
-
+require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
 include "config/db.php";
 
 $table_names = ["villages", "treatments", "diseases"];
