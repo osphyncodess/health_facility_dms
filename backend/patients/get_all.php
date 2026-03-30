@@ -1,47 +1,72 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
+header("Content-Type: application/json");
+
+// Include database and helper functions
 include "../config/db.php";
-include "../functions.php";
 
-$patientID = null;
-if (isset($_GET["id"])) {
-  $patientID = $_GET["id"];
+// Utility function to get rows from DB
+function get_db_rows($conn, $sql)
+{
+  $result = $conn->query($sql);
+  if (!$result) {
+    die(json_encode(["error" => "SQL Error: " . $conn->error]));
+  }
+
+  $data = [];
+  while ($row = $result->fetch_assoc()) {
+    $data[] = $row;
+  }
+
+  return $data;
 }
 
-$sql =
-  "SELECT * FROM patients p, villages v WHERE p.villageID=v.id ORDER BY p.serialNumber";
+// Get optional patient ID from GET
+$patientID = isset($_GET["id"]) ? intval($_GET["id"]) : null;
 
+// Base SQL for patients
+$sql = "SELECT p.*, v.village 
+        FROM patients p 
+        LEFT JOIN villages v ON p.villageID = v.id";
+
+// Add patient filter if ID is provided
 if ($patientID !== null) {
-  $sql =
-    "SELECT * FROM patients p, villages v WHERE p.villageID=v.id AND p.patientID=" .
-    $patientID;
+  $sql .= " WHERE p.patientID = $patientID";
 }
 
+// Order by serialNumber if not filtered
+if ($patientID === null) {
+  $sql .= " ORDER BY p.serialNumber";
+}
+
+// Fetch patients
 $patientData = get_db_rows($conn, $sql);
+
 $patients = [];
 
 foreach ($patientData as $patient) {
-  $patientID = $patient["patientID"];
+  $pid = $patient["patientID"];
 
-  $conditionsData = get_db_rows(
-    $conn,
-    "SELECT c.id as conditionID, c.test, c.result, c.diseaseID, d.diseaseName, d.diseaseCode FROM conditions c, diseases d Where c.diseaseID = d.id AND c.patientID=" .
-      $patientID
-  );
+  // Fetch conditions with disease info
+  $conditionsSQL = "SELECT c.id as conditionID, c.test, c.result, c.diseaseID, d.diseaseName, d.diseaseCode
+                      FROM conditions c
+                      LEFT JOIN diseases d ON c.diseaseID = d.id
+                      WHERE c.patientID = $pid";
+  $conditionsData = get_db_rows($conn, $conditionsSQL);
 
   $conditions = [];
-
   foreach ($conditionsData as $condition) {
-    $treatments = get_db_rows(
-      $conn,
-      "SELECT a.treatmentID, b.treatment FROM treatments_given a, treatments b WHERE    a.conditionsID = " .
-        $condition["conditionID"] .
-        " AND a.treatmentID = b.id "
-    );
+    $condID = $condition["conditionID"];
+
+    // Fetch treatments for each condition
+    $treatmentsSQL = "SELECT tg.treatmentID, t.treatment
+                          FROM treatments_given tg
+                          LEFT JOIN treatments t ON tg.treatmentID = t.id
+                          WHERE tg.conditionsID = $condID";
+    $treatments = get_db_rows($conn, $treatmentsSQL);
 
     $condition["treatments"] = $treatments;
 
-    // if condition is malaria
+    // Custom disease code logic
     if ($condition["diseaseName"] === "Malaria") {
       if ($patient["age"] < 5) {
         $condition["diseaseCode"] = "32A";
@@ -55,21 +80,17 @@ foreach ($patientData as $patient) {
       }
     }
 
-    // if condition is GE
     if ($condition["diseaseName"] === "GE") {
-      if ($patient["age"] < 5) {
-        $condition["diseaseCode"] = "14A";
-      } else {
-        $condition["diseaseCode"] = "14B";
-      }
+      $condition["diseaseCode"] = $patient["age"] < 5 ? "14A" : "14B";
     }
-    array_push($conditions, $condition);
+
+    $conditions[] = $condition;
   }
 
   $patient["conditions"] = $conditions;
-
-  array_push($patients, $patient);
+  $patients[] = $patient;
 }
-echo json_encode($patients);
-//echo json_encode($data);
+
+// Output JSON
+echo json_encode($patients, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 ?>

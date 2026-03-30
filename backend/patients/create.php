@@ -4,8 +4,7 @@ include "../config/db.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-echo json_encode($data);
-exit();
+
 $p = $data["p"];
 $d = $data["d"];
 
@@ -24,21 +23,22 @@ try {
   // 👉 Insert Patient
   $stmt = $conn->prepare("
     INSERT INTO patients 
-    (serialNumber, date, name, age, gender, hiv_status, villageID)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    (serialNumber, date, name, age, gender, hiv_status, villageID, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?,?)
   ");
 
   $name = trim($p["name"]);
 
   $stmt->bind_param(
-    "sssissi",
+    "sssissii",
     $p["serialNumber"],
     $p["date"],
     $name,
     $p["age"],
     $p["gender"],
     $p["hiv_status"],
-    $villageID
+    $villageID,
+    $data["user"]
   );
 
   $stmt->execute();
@@ -46,13 +46,13 @@ try {
 
   // 👉 Prepare reusable statements
   $conditionStmt = $conn->prepare("
-    INSERT INTO conditions (patientID, test, result, diseaseID)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO conditions (patientID, test, result, diseaseID, created_by)
+    VALUES (?, ?, ?, ?, ?)
   ");
 
   $treatmentStmt = $conn->prepare("
-    INSERT INTO treatments_given (conditionsID, treatmentID)
-    VALUES (?, ?)
+    INSERT INTO treatments_given (conditionsID, treatmentID, created_by)
+    VALUES (?, ?, ?)
   ");
 
   // 👉 Insert Diagnoses
@@ -60,11 +60,12 @@ try {
     $diseaseID = explode(",", $diagnosis["diagnosis"][0])[0];
 
     $conditionStmt->bind_param(
-      "issi",
+      "issii",
       $patientID,
       $diagnosis["test"],
       $diagnosis["result"],
-      $diseaseID
+      $diseaseID,
+      $data["user"]
     );
 
     $conditionStmt->execute();
@@ -74,7 +75,12 @@ try {
     foreach ($diagnosis["treatment"] as $t) {
       $treatmentID = explode(",", $t)[0];
 
-      $treatmentStmt->bind_param("ii", $conditionID, $treatmentID);
+      $treatmentStmt->bind_param(
+        "iii",
+        $conditionID,
+        $treatmentID,
+        $data["user"]
+      );
 
       $treatmentStmt->execute();
     }

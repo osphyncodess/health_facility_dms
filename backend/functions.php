@@ -1,15 +1,17 @@
-<?php 
+<?php
 function get_db_rows($conn, $sql)
 {
-  $stmt = $conn->prepare($sql);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = [];
+    $result = $conn->query($sql);
 
-  while ($row = $result->fetch_assoc()) {
-    $data[] = $row;
-  }
+    if (!$result) {
+        die("SQL Error: " . $conn->error);
+    }
 
-  return $data;
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    return $data;
 }
 ?>

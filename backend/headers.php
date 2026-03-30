@@ -1,5 +1,5 @@
 <?php
-$frontend_origin = "http://localhost:5173"; // Change to your React app origin
+$frontend_origin = "http://localhost:5000"; // Change to your React app origin
 
 header("Access-Control-Allow-Origin: $frontend_origin");
 header("Access-Control-Allow-Credentials: true");

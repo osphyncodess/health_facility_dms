@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import FormDynamic from "../../components/FormDynamic";
-import { createPatient, getLabelID, makeFormValues } from "../../api";
+import { createRecords, getLabelID, makeFormValues } from "../../api";
 import { MdArrowBack, MdCancel, MdOutlineCancel } from "react-icons/md";
 import {
     FaArrowLeft,
@@ -14,6 +14,7 @@ import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useSwipeable } from "react-swipeable";
+import { AuthContext } from "../../auth/AuthContext";
 
 function DataEntry() {
     const initialState = {
@@ -47,6 +48,7 @@ function DataEntry() {
 
         lastOpd: null
     };
+    const { user } = useContext(AuthContext);
     const [villages, setVillages] = useState([]);
     const [diseases, setDiseases] = useState([]);
     const [treatments, setTreatments] = useState([]);
@@ -212,7 +214,8 @@ function DataEntry() {
                 console.log(res.data.last_opd);
                 console.log(initialPatentData);
                 if (res.data.last_opd) {
-                    initialPatentData["serialNumber"] = res.data.last_opd + 1;
+                    initialPatentData["serialNumber"] =
+                        Number(res.data.last_opd) + 1;
                 }
             })
             .catch(err => console.log(err));
@@ -464,21 +467,16 @@ function DataEntry() {
 
             const data = {
                 p: patientData,
-                d: diagnosisArray
+                d: diagnosisArray,
+                user: user.id
             };
 
             console.log(data);
 
             try {
-                const response = createPatient(data, true);
-
-                response.then(datas => {
-                    console.log(datas);
-
-                    setTimeout(() => {
-                        setIsLoading(false);
-                        showAlert(datas["message"], 3000, datas["type"]);
-                    }, 500);
+                createRecords(data, "patients/create", false).then(res => {
+                    //console.log("results", res.data);
+                    alert(res.message);
 
                     patientData["serialNumber"] =
                         Number(patientData["serialNumber"]) + 1;
@@ -486,7 +484,7 @@ function DataEntry() {
                     patientData["village"] = [];
                     patientData["age"] = "";
                     setDiagnosisArray([]);
-                    navigate("/patients/create");
+                    navigate("/");
                 });
             } catch (error) {
                 console.log(error);
