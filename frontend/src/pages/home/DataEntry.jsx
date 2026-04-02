@@ -272,6 +272,7 @@ function DataEntry() {
 
     //clicking review patient details paragraph
     const handlePatientReviewClick = index => {
+        //alert(index);
         setReviewClicked(true);
         setStep(index);
         setSubmit(false);
@@ -476,7 +477,7 @@ function DataEntry() {
             try {
                 createRecords(data, "patients/create", false).then(res => {
                     //console.log("results", res.data);
-                    alert(res.message);
+                    showAlert(res.message, 3000, "info");
 
                     patientData["serialNumber"] =
                         Number(patientData["serialNumber"]) + 1;
@@ -484,7 +485,7 @@ function DataEntry() {
                     patientData["village"] = [];
                     patientData["age"] = "";
                     setDiagnosisArray([]);
-                    navigate("/");
+                    handlePatientReviewClick(0);
                 });
             } catch (error) {
                 console.log(error);

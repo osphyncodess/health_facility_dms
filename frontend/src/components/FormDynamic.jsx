@@ -153,10 +153,11 @@ const FormDynamic = ({
                 <div className="form-group">
                     <label htmlFor={currentControl.name}>
                         {currentControl.label}
+                        {currentControl.type === "select-many" &&<button className="btn btn-primary">Add New</button>}
                     </label>
                     {currentControl.type === "select-many" && (
                         <div className="select-many-container">
-                            <div className="selected-values">
+                            <div className="selected-valueso">
                                 {currentControl.options
                                     .filter(val => {
                                         return String(val.label)

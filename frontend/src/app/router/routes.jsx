@@ -14,6 +14,7 @@ const ConditionForm = lazy(() => import("../../components/ConditionForm"));
 const VillageForm = lazy(() => import("../../components/VillageForm"));
 const TreatmentForm = lazy(() => import("../../components/TreatmentForm"));
 const SwipePage = lazy(() => import("../../components/SwipePage"));
+const TryExcel = lazy(() => import("../../pages/home/TryExcel"));
 const Login = lazy(() => import("../../pages/Login"));
 const CreateUser = lazy(() => import("../../pages/CreateUser"));
 
@@ -24,6 +25,10 @@ export const routes = [
             {
                 path: "/login",
                 element: <Login />
+            },
+            {
+                path: "/excel",
+                element: <TryExcel />
             },
             {
                 path: "/users/create",
@@ -87,9 +92,11 @@ export const routes = [
             },
             {
                 path: "patients/:id/",
-                element: <ProtectedRoute>
+                element: (
+                    <ProtectedRoute>
                         <PatientDetails />
                     </ProtectedRoute>
+                )
             }
         ]
     },
