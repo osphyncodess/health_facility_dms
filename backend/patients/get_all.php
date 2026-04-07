@@ -1,4 +1,5 @@
 <?php
+require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
 header("Content-Type: application/json");
 
 // Include database and helper functions

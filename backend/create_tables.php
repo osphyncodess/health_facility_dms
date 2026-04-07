@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
+//require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
 require_once "config/db.php";
 
 // Drop tables if exist
@@ -38,7 +38,7 @@ $village_sql = "CREATE TABLE IF NOT EXISTS villages (
 // Patients Table
 $patients_sql = "CREATE TABLE IF NOT EXISTS patients (
     patientID INT AUTO_INCREMENT PRIMARY KEY,
-    serialNumber INT NOT NULL UNIQUE,
+    serialNumber INT,
     date DATE NOT NULL,
     name VARCHAR(100) NULL,
     age INT NOT NULL,
@@ -78,10 +78,10 @@ $treatment_sql = "CREATE TABLE IF NOT EXISTS treatments (
 // Conditions Table
 $conditions_sql = "CREATE TABLE IF NOT EXISTS conditions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    patientID INT,
-    test VARCHAR(4),
-    result VARCHAR(8),
-    diseaseID INT,
+    patientID INT NOT NULL,
+    test VARCHAR(4) NULL,
+    result VARCHAR(8) NULL,
+    diseaseID INT NOT NULL,
     created_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_condition_patient (patientID),

@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
+//require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
 include "../config/db.php";
 
 $sql = "SELECT * FROM villages ORDER BY village";
