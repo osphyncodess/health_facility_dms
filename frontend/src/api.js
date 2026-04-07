@@ -1,6 +1,6 @@
 import axios from "axios";
 var API_URL = "http://localhost:8000"; // your PHP server
-// API_URL = "http://10.154.192.166:8000";
+API_URL = "http://10.47.211.208:8000";
 
 const api = axios.create({
   baseURL: API_URL,

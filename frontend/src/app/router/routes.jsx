@@ -7,7 +7,7 @@ import PatientDetails from "../../pages/home/PatientDetails";
 // import DashboardLayout from "../../layouts/DashboardLayout";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import AdminRoute from "../../components/AdminRoute";
-import CreatePatients from "../../pages/data_entries/createPatients";
+import CreatePatients from "../../pages/data_entries/CreatePatients";
 const HomePage = lazy(() => import("../../pages/home/HomePage"));
 
 const NotFoundPage = lazy(() => import("../../pages/NotFoundPage"));
