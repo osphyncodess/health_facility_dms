@@ -5,8 +5,8 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/headers.php";
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 $host = "127.0.0.1";
-$user = "osphyncodes";
-$password = "Osphyncodes@1995";
+$user = "root";
+$password = "usbw";
 $dbname = "osphyncodes";
 
 $conn = new mysqli($host, $user, $password, $dbname);
