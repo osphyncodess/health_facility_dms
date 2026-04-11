@@ -26,7 +26,7 @@ $patientID = isset($_GET["id"]) ? intval($_GET["id"]) : null;
 
 // Base SQL for patients
 $sql = "SELECT p.*, v.village 
-        FROM patients p 
+        FROM malaria_patients p 
         LEFT JOIN villages v ON p.villageID = v.id";
 
 // Add patient filter if ID is provided

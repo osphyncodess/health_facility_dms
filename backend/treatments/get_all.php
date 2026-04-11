@@ -2,7 +2,7 @@
 //require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
 include "../config/db.php";
 
-$sql = "SELECT * FROM treatments ORDER BY treatment";
+$sql = "SELECT * FROM treatments WHERE treatment LIKE 'LA%' ORDER BY treatment";
 
 $stmt = $conn->prepare($sql);
 $stmt->execute();

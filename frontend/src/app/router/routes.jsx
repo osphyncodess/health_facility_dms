@@ -16,6 +16,8 @@ const CreateVillages = lazy(
   () => import("../../pages/data_entries/CreateVillages"),
 );
 const TreatmentForm = lazy(() => import("../../components/TreatmentForm"));
+
+const TryForm = lazy(() => import("../../components/TryForm"));
 const SwipePage = lazy(() => import("../../components/SwipePage"));
 const TryExcel = lazy(() => import("../../pages/home/TryExcel"));
 const Login = lazy(() => import("../../pages/Login"));

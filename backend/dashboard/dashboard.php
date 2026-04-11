@@ -1,110 +1,233 @@
 <?php
-//require_once $_SERVER["DOCUMENT_ROOT"] . "/middleware/secure_api.php";
-header("Content-Type: application/json");
+require_once $_SERVER["DOCUMENT_ROOT"] . "/headers.php";
 
-// Include database and helper functions
-include "../config/db.php";
+// ========================
+// DB CONNECTION (PDO)
+// ========================
+$host = "127.0.0.1";
+$db = "osphyncodes";
+$user = "root";
+$pass = "root123";
 
-// Utility function to get rows from DB
-function get_db_rows($conn, $sql)
-{
-  $result = $conn->query($sql);
-  if (!$result) {
-    die(json_encode(["error" => "SQL Error: " . $conn->error]));
-  }
 
-  $data = [];
-  while ($row = $result->fetch_assoc()) {
-    $data[] = $row;
-  }
-
-  return $data;
+try {
+  $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+  echo json_encode([
+    "status" => false,
+    "message" => "Database connection failed",
+  ]);
+  exit();
 }
 
-$stats = [];
-$table_names = [
-  "Patients" => "patients",
-  "Malaria Patients" => "malaria_patients",
-  "MP in La Register" => "malaria_patients_in_la_reg",
-  "MP Not in La Register" => "malaria_patients_not_in_la_reg",
+// ========================
+// GET FILTERS
+// ========================
+$filterType = $_GET["filterType"] ?? "";
+$date1 = $_GET["date1"] ?? "";
+$date2 = $_GET["date2"] ?? "";
+
+// ========================
+// VALIDATE DATES
+// ========================
+function isValidDate($date)
+{
+  return preg_match("/^\d{4}-\d{2}-\d{2}$/", $date);
+}
+
+if ($date1 && !isValidDate($date1)) {
+  $date1 = null;
+}
+if ($date2 && !isValidDate($date2)) {
+  $date2 = null;
+}
+
+// ========================
+// BUILD SAFE WHERE CLAUSE
+// ========================
+function buildDateFilter($filterType, $date1, $date2, &$params, $column)
+{
+  
+
+  switch ($filterType) {
+    case "previous_month":
+      return "WHERE MONTH($column) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)
+              AND YEAR($column) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)";
+
+    case "specific_date":
+      if ($date1) {
+        $params[] = $date1;
+        return "WHERE DATE($column) = ?";
+      }
+      break;
+
+    case "between":
+      if ($date1 && $date2) {
+        $params[] = $date1;
+        $params[] = $date2;
+        return "WHERE DATE($column) BETWEEN ? AND ?";
+      }
+      break;
+
+    case "greater":
+      if ($date1) {
+        $params[] = $date1;
+        return "WHERE DATE($column) >= ?";
+      }
+      break;
+
+    case "less":
+      if ($date1) {
+        $params[] = $date1;
+        return "WHERE DATE($column) <= ?";
+      }
+      break;
+  }
+
+  return "";
+}
+
+// ========================
+// GENERIC QUERY EXECUTOR
+// ========================
+function fetchAllSafe($conn, $sql, $params = [])
+{
+  $stmt = $conn->prepare($sql);
+  $stmt->execute($params);
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// ========================
+// TABLE CONFIG (IMPORTANT)
+// ========================
+$table_configs = [
+  ["label" => "Patients", "table" => "patients", "date_col" => "date"],
+  [
+    "label" => "Malaria Patients",
+    "table" => "malaria_patients",
+    "date_col" => "date",
+  ],
+  [
+    "label" => "MP in La Register",
+    "table" => "malaria_patients_in_la_reg",
+    "date_col" => "date",
+  ],
+  [
+    "label" => "MP Not in La Register",
+    "table" => "malaria_patients_not_in_la_reg",
+    "date_col" => "date",
+  ],
 ];
 
-$response = [];
-
-//patient stats
+// ========================
+// MAIN LOGIC
+// ========================
 try {
-  foreach ($table_names as $key => $value) {
-    $sql = "SELECT COUNT(*) AS v FROM " . $value;
+  // ========================
+  // 1. STATS
+  // ========================
+  $stats = [];
 
-    $dataCount = get_db_rows($conn, $sql);
+  foreach ($table_configs as $t) {
+    $params = [];
+    $where = buildDateFilter(
+      $filterType,
+      $date1,
+      $date2,
+      $params,
+      $t["date_col"]
+    );
 
-    $query_data = [];
-    $query_data["title"] = $key;
-    $query_data["value"] = $dataCount[0]["v"];
+    $sql = "SELECT COUNT(*) AS v FROM {$t["table"]} $where";
 
-    array_push($stats, $query_data);
+    $result = fetchAllSafe($conn, $sql, $params);
+
+    $stats[] = [
+      "title" => $t["label"],
+      "value" => $result[0]["v"] ?? 0,
+    ];
   }
 
-  //distributed by visit date
-  $sql =
-    "SELECT date, count(*) as count from patients GROUP BY date ORDER BY date DESC";
-  $queried_data = get_db_rows($conn, $sql);
+  // ========================
+  // 2. DATE DISTRIBUTION
+  // ========================
+  $params = [];
+  $where = buildDateFilter($filterType, $date1, $date2, $params, "date");
 
-  $distributed_by_visit_date = [];
+  $sql = "SELECT DATE(date) as d, COUNT(*) as count 
+          FROM patients
+          $where
+          GROUP BY d
+          ORDER BY d DESC";
 
-  foreach ($queried_data as $value) {
-    array_push($distributed_by_visit_date, [
-      "name" => $value["date"],
-      "patients" => $value["count"],
-    ]);
+  $dateData = fetchAllSafe($conn, $sql, $params);
+
+  $dateDistribution = [];
+
+  foreach ($dateData as $row) {
+    $dateDistribution[] = [
+      "name" => $row["d"],
+      "patients" => $row["count"],
+    ];
   }
 
-  //Conditions
-  $sql = 'SELECT
-    diseaseName,
-    COUNT(*) AS count,
-    ROUND(((COUNT(*)/(SELECT COUNT(*) FROM conditions_with_disease_name)) * 100)) as perc
-    
-FROM
-    conditions_with_disease_name
-GROUP BY
-    diseaseName
-ORDER BY
-    count
-DESC';
-  $queried_data_conditions = get_db_rows($conn, $sql);
+  // ========================
+  // 3. CONDITIONS
+  // ========================
+  $params = [];
+  $where = buildDateFilter($filterType, $date1, $date2, $params, "date");
 
-  $final_data = [
-    "stats" => $stats,
-    "dateDistribution" => $distributed_by_visit_date,
-    "conditions" => $queried_data_conditions,
-  ];
-  // Output JSON
+  // TOTAL (separate params copy)
+  $totalParams = $params;
 
-  $response["status"] = true;
-  $response["data"] = $final_data;
+  $totalSql = "SELECT COUNT(*) as total 
+               FROM conditions_with_disease_name 
+               $where";
+
+  $totalResult = fetchAllSafe($conn, $totalSql, $totalParams);
+  $total = $totalResult[0]["total"] ?? 1;
+
+  if ($total == 0) {
+    $total = 1;
+  } // avoid division by zero
+
+  // MAIN QUERY
+  $conditionsSql = "SELECT diseaseName, COUNT(*) AS count
+                    FROM conditions_with_disease_name
+                    $where
+                    GROUP BY diseaseName
+                    ORDER BY count DESC";
+
+  $conditionsData = fetchAllSafe($conn, $conditionsSql, $params);
+
+  $conditions = [];
+
+  foreach ($conditionsData as $row) {
+    $conditions[] = [
+      "diseaseName" => $row["diseaseName"],
+      "count" => $row["count"],
+      "perc" => round(($row["count"] / $total) * 100),
+    ];
+  }
+
+  // ========================
+  // FINAL RESPONSE
+  // ========================
+  echo json_encode(
+    [
+      "status" => true,
+      "data" => [
+        "stats" => $stats,
+        "dateDistribution" => $dateDistribution,
+        "conditions" => $conditions,
+      ],
+    ],
+    JSON_UNESCAPED_UNICODE
+  );
 } catch (Exception $e) {
-  $response["status"] = false;
-  $response["data"] = null;
-  $response["message"] = $e->getMessage();
+  echo json_encode([
+    "status" => false,
+    "message" => $e->getMessage(),
+  ]);
 }
-echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-// Get optional patient ID from GET
-// $patientID = isset($_GET["id"]) ? intval($_GET["id"]) : null;
-
-// // Base SQL for patients
-// $sql = "SELECT p.*, v.village
-//         FROM patients p
-//         LEFT JOIN villages v ON p.villageID = v.id";
-
-// // Add patient filter if ID is provided
-// if ($patientID !== null) {
-//     $sql .= " WHERE p.patientID = $patientID";
-// }
-
-// // Order by serialNumber if not filtered
-// if ($patientID === null) {
-//     $sql .= " ORDER BY p.serialNumber";
-// }
-
-// Fetch patients
