@@ -21,7 +21,6 @@ const VillageForm = ({ setResponse, setShowVillageForm }) => {
     }
 
     createRecords(form, "villages/create", false).then((res) => {
-      console.log(res);
       alert(res.message);
 
       if (res.status) {

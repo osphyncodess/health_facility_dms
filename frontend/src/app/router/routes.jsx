@@ -23,6 +23,9 @@ const TryExcel = lazy(() => import("../../pages/home/TryExcel"));
 const Login = lazy(() => import("../../pages/Login"));
 const CreateUser = lazy(() => import("../../pages/CreateUser"));
 const Dashboard = lazy(() => import("../../pages/home/Dashboard"));
+const Labs = lazy(()=> import("../../pages/data_entries/CreateLabs"))
+const Settings = lazy(()=> import("../../pages/home/Settings"))
+const Reports = lazy(()=> import("../../pages/home/Reports"))
 
 export const routes = [
   {
@@ -35,17 +38,25 @@ export const routes = [
       {
         path: "/patients/create/excel-like",
         element: (
-          <ProtectedRoute>
+          <AdminRoute>
             <TryExcel />
-          </ProtectedRoute>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/labs/create",
+        element: (
+          <AdminRoute>
+            <Labs />
+          </AdminRoute>
         ),
       },
       {
         path: "/patients/create/form",
         element: (
-          <ProtectedRoute>
+          <AdminRoute>
             <DataEntry />
-          </ProtectedRoute>
+          </AdminRoute>
         ),
       },
       {
@@ -55,7 +66,11 @@ export const routes = [
 
       {
         path: "/user/create",
-        element: <CreateUser />,
+        element: (
+          <AdminRoute>
+            <CreateUser />
+          </AdminRoute>
+        ),
       },
       {
         path: "/users/create",
@@ -68,9 +83,9 @@ export const routes = [
       {
         path: ROUTES.ENTRY.OPR_ENTRY,
         element: (
-          <ProtectedRoute>
+          <AdminRoute>
             <CreatePatients />
-          </ProtectedRoute>
+          </AdminRoute>
         ),
       },
       {
@@ -89,6 +104,24 @@ export const routes = [
           </ProtectedRoute>
         ),
       },
+
+      {
+        path: "/settings/",
+        element: (
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: "/Reports/",
+        element: (
+          <ProtectedRoute>
+            <Reports />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "/swipe/",
         element: <SwipePage />,
@@ -96,25 +129,25 @@ export const routes = [
       {
         path: ROUTES.ENTRY.DISEASE_CREATE,
         element: (
-          <ProtectedRoute>
+          <AdminRoute>
             <ConditionForm />
-          </ProtectedRoute>
+          </AdminRoute>
         ),
       },
       {
         path: ROUTES.ENTRY.VILLAGE_CREATE,
         element: (
-          <ProtectedRoute>
+          <AdminRoute>
             <CreateVillages />
-          </ProtectedRoute>
+          </AdminRoute>
         ),
       },
       {
         path: ROUTES.ENTRY.TREATMENT_CREATE,
         element: (
-          <ProtectedRoute>
+          <AdminRoute>
             <TreatmentForm />
-          </ProtectedRoute>
+          </AdminRoute>
         ),
       },
       {

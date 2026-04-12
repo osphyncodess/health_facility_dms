@@ -15,29 +15,6 @@ function get_id($tableName, $columnName, $conn, $value)
     return get_db_rows($conn, "SELECT id FROM " . $tableName . " WHERE " . $columnName . "='" . $value . "'")[0]['id'];
 }
 
-foreach ($datas as $data) {
-
-
-    // echo json_encode($data);
-
-
-    $p = [
-        'serialNumber' => $data['opd_number'],
-        'date' => $data['date'],
-        'name' => $data['name'],
-        'age' => $data['age'],
-        'gender' => $data['gender'],
-        'hiv_status' => $data['hiv_status'],
-        'village' => get_id('villages', 'village', $conn, $data['village'])
-    ];
-
-
-
-    $d = $data["pairs"];
-
-    //echo json_encode($d);
-    //exit();
-
     $response = [
         "message" => "Something went wrong",
         "status" => false,
@@ -48,83 +25,112 @@ foreach ($datas as $data) {
         // 🔥 START TRANSACTION
         $conn->begin_transaction();
 
-        // 👉 Insert Patient
-        $stmt = $conn->prepare("
-        INSERT INTO patients 
-        (serialNumber, date, name, age, gender, hiv_status, villageID, created_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?,?)
-    ");
+        foreach ($datas as $data) {
 
-        $name = trim($p["name"]);
 
-        $stmt->bind_param(
-            "sssissii",
-            $p["serialNumber"],
-            $p["date"],
-            $name,
-            $p["age"],
-            $p["gender"],
-            $p["hiv_status"],
-            $p['village'],
-            $user
-        );
+            // echo json_encode($data);
 
-        $stmt->execute();
-        $patientID = $conn->insert_id;
 
-        // 👉 Prepare reusable statements
-        $conditionStmt = $conn->prepare("
-        INSERT INTO conditions (patientID, diseaseID, created_by)
-        VALUES (?, ?, ?)
-    ");
+            $p = [
+                'serialNumber' => $data['opd_number'],
+                'date' => $data['date'],
+                'name' => $data['name'],
+                'age' => $data['age'],
+                'gender' => $data['gender'],
+                'hiv_status' => $data['hiv_status'],
+                'village' => get_id('villages', 'village', $conn, $data['village'])
+            ];
 
-        $treatmentStmt = $conn->prepare("
-        INSERT INTO treatments_given (conditionsID, treatmentID, created_by)
-        VALUES (?, ?, ?)
-    ");
 
-        // 👉 Insert Diagnoses
-        foreach ($d as $diagnosis) {
-            $diseaseID = get_id('diseases', 'diseaseName', $conn, $diagnosis['condition']);
 
-            //echo json_encode($diseaseID);
+            $d = $data["pairs"];
 
-            $conditionStmt->bind_param(
-                "iii",
-                $patientID,
-                $diseaseID,
+            //echo json_encode($d);
+            //exit();
+
+           
+
+            $stmt = $conn->prepare("
+            INSERT INTO patients 
+            (serialNumber, date, name, age, gender, hiv_status, villageID, created_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?,?)
+            ");
+
+            $name = trim($p["name"]);
+
+            $stmt->bind_param(
+                "sssissii",
+                $p["serialNumber"],
+                $p["date"],
+                $name,
+                $p["age"],
+                $p["gender"],
+                $p["hiv_status"],
+                $p['village'],
                 $user
             );
 
-            $conditionStmt->execute();
-            $conditionID = $conn->insert_id;
+            $stmt->execute();
+            $patientID = $conn->insert_id;
 
-            // 👉 Insert Treatments
-            foreach ($diagnosis["treatment"] as $t) {
+            // 👉 Prepare reusable statements
+            $conditionStmt = $conn->prepare("
+                INSERT INTO conditions (patientID, diseaseID, created_by)
+                VALUES (?, ?, ?)
+            ");
 
-                $treatmentID = get_id('treatments', 'treatment', $conn, $t);
+            $treatmentStmt = $conn->prepare("
+                INSERT INTO treatments_given (conditionsID, treatmentID, created_by)
+                VALUES (?, ?, ?)
+            ");
 
+            // 👉 Insert Diagnoses
+            foreach ($d as $diagnosis) {
+                $diseaseID = get_id('diseases', 'diseaseName', $conn, $diagnosis['condition']);
 
+                //echo json_encode($diseaseID);
 
-                $treatmentStmt->bind_param(
+                $conditionStmt->bind_param(
                     "iii",
-                    $conditionID,
-                    $treatmentID,
+                    $patientID,
+                    $diseaseID,
                     $user
                 );
 
-                $treatmentStmt->execute();
+                $conditionStmt->execute();
+                $conditionID = $conn->insert_id;
+
+                // 👉 Insert Treatments
+                foreach ($diagnosis["treatment"] as $t) {
+
+                    $treatmentID = get_id('treatments', 'treatment', $conn, $t);
+
+
+
+                    $treatmentStmt->bind_param(
+                        "iii",
+                        $conditionID,
+                        $treatmentID,
+                        $user
+                    );
+
+                    $treatmentStmt->execute();
+                }
             }
         }
+        // 👉 Insert Patient
+        
 
         // ✅ COMMIT if everything succeeded
         $conn->commit();
+        
 
         $response = [
-            "message" => "Patient created successfully",
+            "message" => "Patients created successfully",
             "status" => true,
             "record_id" => $patientID,
             "type" => "success",
+            
         ];
     } catch (Exception $e) {
         // ❌ ROLLBACK everything on error
@@ -132,6 +138,6 @@ foreach ($datas as $data) {
 
         $response["message"] = $e->getMessage();
     }
-}
+
 
 echo json_encode($response);

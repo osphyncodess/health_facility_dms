@@ -6,11 +6,9 @@ export default function SwipePage() {
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      console.log("Next page");
       navigate("/next"); // forward
     },
     onSwipedRight: () => {
-      console.log("Previous page");
       navigate(-1); // back
     },
     preventDefaultTouchmoveEvent: true,

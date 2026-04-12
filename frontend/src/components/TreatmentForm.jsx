@@ -20,7 +20,6 @@ const TreatmentForm = ({ setResponse, setShowModal }) => {
     }
     createRecords(form, "treatments/create", false).then((res) => {
       alert(res.message);
-      console.log(res);
 
       if (res.status) {
         setForm({

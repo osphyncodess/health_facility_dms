@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import NavBar from "./NavBar";
 
 /**
  * AdminRoute
@@ -21,5 +22,9 @@ export default function AdminRoute({ children }) {
   }
 
   // If admin, render children
-  return children;
+  return (
+    <>
+      <NavBar /> {children}
+    </>
+  );
 }

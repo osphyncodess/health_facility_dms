@@ -104,12 +104,10 @@ const FormDynamic = ({
     const handleRemoveSelected = val => {
         const valArray = form[currentControl.name];
 
-        console.log(val);
         const newArray = valArray.filter(v => {
             return val !== v;
         });
 
-        console.log(newArray);
         setForm({
             ...form,
             [currentControl.name]: newArray
@@ -119,9 +117,6 @@ const FormDynamic = ({
     const handlers = useSwipeable({
         onSwipedLeft: eventData => {
             eventData.event.stopPropagation();
-            console.log("Next page");
-            //alert(JSON.stringfy(formData));
-            //alert(currentControl.name);
 
             if (currentControl.name == formData[formData.length - 1].name) {
                 handleSubmit(form);
@@ -130,7 +125,6 @@ const FormDynamic = ({
         },
         onSwipedRight: eventData => {
             eventData.event.stopPropagation();
-            console.log("Previous page");
 
             step === 0 ? backArrow() : setStep(step - 1);
         },

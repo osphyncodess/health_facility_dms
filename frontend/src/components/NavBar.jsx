@@ -6,7 +6,7 @@ import { AuthContext } from "../auth/AuthContext";
 
 const NavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { logout, user } = useContext(AuthContext);
+  const { logout, user, isAdmin } = useContext(AuthContext);
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };

@@ -7,8 +7,9 @@ import {
 } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import "../../assets/css/patient_details.css";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import api from "../../api";
+import { AuthContext } from "../../auth/AuthContext";
 
 const PatientDetails = () => {
     const { id } = useParams();
@@ -16,13 +17,13 @@ const PatientDetails = () => {
     const [conditions, setConditions] = useState(null);
     const [currIndex, setCurrIndex] = useState(0);
     const navigate = useNavigate();
+    const {isAdmin} = useContext(AuthContext)
 
     useEffect(() => {
         setTimeout(() => {
             api.get(`/patients/get_all.php?id=${id}`)
                 .then(res => {
                     const patient = res.data[0];
-                    console.log(patient.conditions[0]);
                     setConditions(patient.conditions);
                     setPatient(patient);
                 })
@@ -37,7 +38,7 @@ const PatientDetails = () => {
         document
             .getElementById(`condition-btn-${index}`)
             .classList.add("btn-primary");
-        console.log(buttons);
+
         setCurrIndex(index);
     };
 
@@ -61,10 +62,10 @@ const PatientDetails = () => {
                     </div>
                 </div>
                 <div className="right">
-                    <button className="btn btn-danger">
+                    {isAdmin && <button className="btn btn-danger">
                         <FaTrash />
                         Void
-                    </button>
+                    </button>}
                 </div>
             </div>
             <div className="details">

@@ -188,7 +188,7 @@ table thead {
   color: white;
 }
 
-.alert {
+.alerts {
   position: fixed;
   top: 0;
   background: black;
@@ -204,17 +204,18 @@ table thead {
   display: flex;
   align-items: center;
   gap: 10px;
+  z-index: 100100;
 }
 
-.alert-error {
+.alerts-error {
   background: darkred;
 }
 
-.alert-info {
+.alerts-info {
   background: darkgreen;
 }
 
-.alert-warning {
+.alerts-warning {
   background: darkgoldenrod;
 }
 

@@ -102,7 +102,7 @@ export default function AuthProvider({ children }) {
     const isAuthenticated = !!user;
 
     var isAdmin = false;
-   console.log(user)
+
     isAuthenticated && (isAdmin = user.role === "admin");
 
     return (

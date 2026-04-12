@@ -7,21 +7,20 @@ $data = json_decode(file_get_contents("php://input"), true);
 $stmt = $conn->prepare("INSERT INTO la_register (patientID, la_given, created_by)
 VALUES (?, ?, ?)");
 
+
 //validations here
-if (!$data['patientID'] || !$data['la_given'] || $data['user']) {
+if ($data['patientID'] == '' || $data['la_given'] == '' || $data['user'] == '') {
    echo json_encode([
-    "message" => "Treatment sucessfully created",
-    "status" => $result,
-    "record_id" => $id,
-    "type" => "info",
+    "message" => "Make sure the submitted data has Patient ID, LA Given and User ID.",
+    "status" => false,
+    "type" => "error",
   ]);
 
   exit;
 }
 
-$treatment = trim($data["treatment"]);
 
-$stmt->bind_param("iii", $treatment, $data["user"]);
+$stmt->bind_param("iii", $data['patientID'], $data["la_given"],  $data["user"]);
 
 try {
   $result = $stmt->execute();
@@ -30,14 +29,14 @@ try {
 $conn->query("DELETE FROM la_register WHERE patientID =''");
 
   echo json_encode([
-    "message" => "Treatment sucessfully created",
+    "message" => "Patient Successfully Linked",
     "status" => $result,
     "record_id" => $id,
     "type" => "info",
   ]);
 } catch (Exception $error) {
   echo json_encode([
-    "message" => trim($data["treatment"]) . " already exists!;",
+    "message" => $error->getMessage(),
     "status" => false,
     "type" => "error",
   ]);

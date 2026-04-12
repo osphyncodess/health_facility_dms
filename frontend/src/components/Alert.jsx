@@ -4,21 +4,21 @@ const Alert = ({ message, type }) => {
   return (
     <>
       {type === "error" && (
-        <div className="alert alert-error">
+        <div className="alerts alerts-error">
           <MdError size={30} />
           <span>{message}!</span>
         </div>
       )}
 
       {type === "warning" && (
-        <div className="alert alert-warning">
+        <div className="alerts alerts-warning">
           <MdWarning size={30} />
           <span>{message}!</span>
         </div>
       )}
 
       {type === "info" && (
-        <div className="alert alert-info">
+        <div className="alerts alerts-info">
           <MdInfo size={30} />
           <span>{message}!</span>
         </div>

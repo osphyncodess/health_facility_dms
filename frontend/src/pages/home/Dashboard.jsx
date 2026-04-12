@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -35,6 +35,9 @@ import {
   MdSettings,
   MdOutlineWifiTetheringError,
 } from "react-icons/md";
+
+import { AuthContext } from "../../auth/AuthContext";
+import Alert from "../../components/Alert";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import api from "../../api";
@@ -77,7 +80,14 @@ const Dashboard = () => {
 
   const [dateDistribution, setDateDistribution] = useState([]);
 
+  //alert message states
+  const [alertMessage, setAlertMessage] = useState("This is an Alert");
+  const [alertType, setAlertType] = useState("error");
+  const [showAlerts, setShowAlerts] = useState(false);
+
+  const [showSubmitSpiner, setShowSubmitSpinner] = useState(false);
   const [conditions, setConditions] = useState([]);
+  const { user, isAdmin } = useContext(AuthContext);
 
   const [showSpinner, setShowSpinner] = useState(true);
   const [filterType, setFilterType] = useState("");
@@ -93,6 +103,7 @@ const Dashboard = () => {
   // Pagination calculations==================================================================================================
   const [patients, setPatients] = useState([]);
   const [loadingPatients, setLoadingPatients] = useState(true);
+  const [change, setChanged] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -172,7 +183,6 @@ const Dashboard = () => {
         },
       })
       .then((res) => {
-        console.log(res.data);
         //return;
         if (res.data.status) {
           const d = res.data.data;
@@ -181,6 +191,7 @@ const Dashboard = () => {
           setConditions(d.conditions);
         }
         setShowSpinner(false);
+        setChanged(false);
       })
       .catch(() => setShowSpinner(false));
 
@@ -193,6 +204,16 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const AlertThem = (message, type, duration = 3000) => {
+    setShowAlerts(true);
+    setAlertMessage(message);
+    setAlertType(type);
+
+    setTimeout(() => {
+      setShowAlerts(false);
+    }, duration);
+  };
 
   const handleStatsClick = async (thing) => {
     setCurrentPage(1);
@@ -218,17 +239,73 @@ const Dashboard = () => {
       default:
         break;
     }
+
+    setPatients([]);
+
+    const storedData = JSON.parse(localStorage.getItem(thing));
+
+    if (storedData) {
+      setPatients(storedData);
+      setLoadingPatients(false);
+      return;
+    }
+
     api
       .get(url)
       .then((res) => {
         setPatients(res.data);
         setLoadingPatients(false);
+        localStorage.setItem(thing, JSON.stringify(res.data));
       })
       .catch((err) => console.log(err));
   };
 
+  const handleSubmit = () => {
+    setShowSubmitSpinner(true);
+    const data = {
+      user: user.id,
+      la_given: selectedLa,
+      patientID: selectedPatient,
+    };
+
+
+    api.post("/la_register/create.php", data).then((res) => {
+
+      if (res.data.status) {
+        AlertThem(res.data.message, res.data.type);
+        clearLocalStorage();
+        setShowSubmitSpinner(false);
+        setChanged(true);
+        handleLaModalClose();
+      } else {
+        AlertThem(res.data.message, res.data.type);
+        setShowSubmitSpinner(false);
+      }
+    });
+  };
+
+  useEffect(()=>{
+    clearLocalStorage(true)
+  },[])
+
+  function clearLocalStorage(All = false) {
+    localStorage.removeItem("MP Not in La Register");
+    localStorage.removeItem("MP in La Register");
+
+    if (All) {
+      localStorage.removeItem("Malaria Patients");
+      localStorage.removeItem("Patients");
+    }
+  }
+
+  function handleLaModalClose() {
+    setShowLaRegModal(!showLaRegModal);
+    setSelectedLa("");
+    handleStatsClick("MP Not in La Register");
+  }
   return (
     <div style={{ display: "flex", height: "100vh" }}>
+      {showAlerts && <Alert message={alertMessage} type={alertType} />}
       {/* MAIN */}
       <div style={{ flex: 1, background: "#f5f6fa" }}>
         {/* TOP NAV */}
@@ -240,16 +317,11 @@ const Dashboard = () => {
         </Navbar>
 
         {/* Client List Modal */}
-        <Modal
-          show={showLaRegModal}
-          onHide={() => {
-            setShowLaRegModal(!showLaRegModal);
-            handleStatsClick("MP Not in La Register");
-            setSelectedLa("");
-          }}
-        >
+        <Modal show={showLaRegModal} onHide={handleLaModalClose}>
           <Modal.Header color="rgb(0,0,0)" closeButton>
-            <Modal.Title color="black">Link OPD #-{selectedOPD} With La Register</Modal.Title>
+            <Modal.Title color="black">
+              Link OPD #-{selectedOPD} With La Register
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -275,31 +347,36 @@ const Dashboard = () => {
           <Modal.Footer>
             <div style={{ width: "100%", display: "flex", gap: "10px" }}>
               <Button
-                onClick={() => {
-                  setShowLaRegModal(!showLaRegModal);
-                  setSelectedLa("");
-                  handleStatsClick("MP Not in La Register");
-                }}
+                onClick={handleLaModalClose}
                 style={{ width: "50%" }}
                 variant="secondary"
               >
                 Cancel
               </Button>
-              <Button style={{ width: "50%" }}>Submit</Button>
+              <Button onClick={handleSubmit} style={{ width: "50%" }}>
+                {showSubmitSpiner ? <Spinner /> : <span>Submit</span>}
+              </Button>
             </div>
           </Modal.Footer>
         </Modal>
+
         <Modal
           show={showModal}
           onHide={() => {
             setShowModal(!showModal);
+
+            if (change) {
+              fetchData();
+            }
           }}
           size="xl"
           backdrop="static"
           style={{ overflowX: "auto" }}
         >
           <Modal.Header closeButton>
-            <Modal.Title>{what}</Modal.Title>
+            <Modal.Title>
+              {what}({patients.length})
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <table className="table table-striped">
@@ -335,7 +412,7 @@ const Dashboard = () => {
                         <td>{patient.age}</td>
                         <td>{conditions.join(", ")}</td>
                         <td>
-                          {what === "MP Not in La Register" && (
+                          {what === "MP Not in La Register" && isAdmin && (
                             <Button
                               variant="secondary"
                               className="me-1"
@@ -356,9 +433,9 @@ const Dashboard = () => {
                           >
                             <FaEye />
                           </button>
-                          <button className="btn btn-danger">
+                          {isAdmin && <button className="btn btn-danger">
                             <FaTrash />
-                          </button>
+                          </button>}
                         </td>
                       </tr>
                     );
