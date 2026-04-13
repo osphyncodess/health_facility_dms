@@ -23,7 +23,7 @@ try {
   // 👉 Insert Patient
   $stmt = $conn->prepare("
     INSERT INTO patients 
-    (serialNumber, date, name, age, gender, hiv_status, villageID, created_by)
+    (serialNumber, visit_date, name, age, gender, hiv_status, villageID, created_by)
     VALUES (?, ?, ?, ?, ?, ?, ?,?)
   ");
 
@@ -32,7 +32,7 @@ try {
   $stmt->bind_param(
     "sssissii",
     $p["serialNumber"],
-    $p["date"],
+    $p["visit_date"],
     $name,
     $p["age"],
     $p["gender"],

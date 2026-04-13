@@ -33,7 +33,7 @@ function get_id($tableName, $columnName, $conn, $value)
 
             $p = [
                 'serialNumber' => $data['opd_number'],
-                'date' => $data['date'],
+                'visit_date' => $data['date'],
                 'name' => $data['name'],
                 'age' => $data['age'],
                 'gender' => $data['gender'],
@@ -52,7 +52,7 @@ function get_id($tableName, $columnName, $conn, $value)
 
             $stmt = $conn->prepare("
             INSERT INTO patients 
-            (serialNumber, date, name, age, gender, hiv_status, villageID, created_by)
+            (serialNumber, visit_date, name, age, gender, hiv_status, villageID, created_by)
             VALUES (?, ?, ?, ?, ?, ?, ?,?)
             ");
 
@@ -61,7 +61,7 @@ function get_id($tableName, $columnName, $conn, $value)
             $stmt->bind_param(
                 "sssissii",
                 $p["serialNumber"],
-                $p["date"],
+                $p["visit_date"],
                 $name,
                 $p["age"],
                 $p["gender"],

@@ -184,8 +184,10 @@ const Dashboard = () => {
       })
       .then((res) => {
         //return;
+        console.log(res.data);
         if (res.data.status) {
           const d = res.data.data;
+
           setStats(d.stats);
           setDateDistribution(d.dateDistribution);
           setConditions(d.conditions);
@@ -268,9 +270,7 @@ const Dashboard = () => {
       patientID: selectedPatient,
     };
 
-
     api.post("/la_register/create.php", data).then((res) => {
-
       if (res.data.status) {
         AlertThem(res.data.message, res.data.type);
         clearLocalStorage();
@@ -284,9 +284,9 @@ const Dashboard = () => {
     });
   };
 
-  useEffect(()=>{
-    clearLocalStorage(true)
-  },[])
+  useEffect(() => {
+    clearLocalStorage(true);
+  }, []);
 
   function clearLocalStorage(All = false) {
     localStorage.removeItem("MP Not in La Register");
@@ -433,9 +433,11 @@ const Dashboard = () => {
                           >
                             <FaEye />
                           </button>
-                          {isAdmin && <button className="btn btn-danger">
-                            <FaTrash />
-                          </button>}
+                          {isAdmin && (
+                            <button className="btn btn-danger">
+                              <FaTrash />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );

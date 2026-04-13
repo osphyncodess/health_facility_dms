@@ -9,7 +9,6 @@ $db = "osphyncodes";
 $user = "root";
 $pass = "root123";
 
-
 try {
   $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -36,21 +35,16 @@ function isValidDate($date)
   return preg_match("/^\d{4}-\d{2}-\d{2}$/", $date);
 }
 
-if ($date1 && !isValidDate($date1)) {
-  $date1 = null;
-}
-if ($date2 && !isValidDate($date2)) {
-  $date2 = null;
-}
+if ($date1 && !isValidDate($date1)) $date1 = null;
+if ($date2 && !isValidDate($date2)) $date2 = null;
 
 // ========================
 // BUILD SAFE WHERE CLAUSE
 // ========================
 function buildDateFilter($filterType, $date1, $date2, &$params, $column)
 {
-  
-
   switch ($filterType) {
+
     case "previous_month":
       return "WHERE MONTH($column) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)
               AND YEAR($column) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)";
@@ -99,31 +93,20 @@ function fetchAllSafe($conn, $sql, $params = [])
 }
 
 // ========================
-// TABLE CONFIG (IMPORTANT)
+// TABLE CONFIG (FIXED)
 // ========================
 $table_configs = [
-  ["label" => "Patients", "table" => "patients", "date_col" => "date"],
-  [
-    "label" => "Malaria Patients",
-    "table" => "malaria_patients",
-    "date_col" => "date",
-  ],
-  [
-    "label" => "MP in La Register",
-    "table" => "malaria_patients_in_la_reg",
-    "date_col" => "date",
-  ],
-  [
-    "label" => "MP Not in La Register",
-    "table" => "malaria_patients_not_in_la_reg",
-    "date_col" => "date",
-  ],
+  ["label" => "Patients", "table" => "patients", "date_col" => "visit_date"],
+  ["label" => "Malaria Patients", "table" => "malaria_patients", "date_col" => "visit_date"],
+  ["label" => "MP in La Register", "table" => "malaria_patients_in_la_reg", "date_col" => "visit_date"],
+  ["label" => "MP Not in La Register", "table" => "malaria_patients_not_in_la_reg", "date_col" => "visit_date"],
 ];
 
-// ========================
-// MAIN LOGIC
-// ========================
+// 👉 FIX: define correct column for this table
+$conditions_date_col = "visit_date"; // 🔴 CHANGE if your table uses something else like created_at
+
 try {
+
   // ========================
   // 1. STATS
   // ========================
@@ -131,6 +114,7 @@ try {
 
   foreach ($table_configs as $t) {
     $params = [];
+
     $where = buildDateFilter(
       $filterType,
       $date1,
@@ -140,7 +124,6 @@ try {
     );
 
     $sql = "SELECT COUNT(*) AS v FROM {$t["table"]} $where";
-
     $result = fetchAllSafe($conn, $sql, $params);
 
     $stats[] = [
@@ -150,12 +133,15 @@ try {
   }
 
   // ========================
-  // 2. DATE DISTRIBUTION
+  // 2. DATE DISTRIBUTION (patients table)
   // ========================
   $params = [];
-  $where = buildDateFilter($filterType, $date1, $date2, $params, "date");
 
-  $sql = "SELECT DATE(date) as d, COUNT(*) as count 
+  $patients_date_col = "visit_date"; // 🔴 change if needed
+
+  $where = buildDateFilter($filterType, $date1, $date2, $params, $patients_date_col);
+
+  $sql = "SELECT DATE($patients_date_col) as d, COUNT(*) as count 
           FROM patients
           $where
           GROUP BY d
@@ -173,12 +159,18 @@ try {
   }
 
   // ========================
-  // 3. CONDITIONS
+  // 3. CONDITIONS (FIXED)
   // ========================
   $params = [];
-  $where = buildDateFilter($filterType, $date1, $date2, $params, "date");
 
-  // TOTAL (separate params copy)
+  $where = buildDateFilter(
+    $filterType,
+    $date1,
+    $date2,
+    $params,
+    $conditions_date_col
+  );
+
   $totalParams = $params;
 
   $totalSql = "SELECT COUNT(*) as total 
@@ -188,11 +180,8 @@ try {
   $totalResult = fetchAllSafe($conn, $totalSql, $totalParams);
   $total = $totalResult[0]["total"] ?? 1;
 
-  if ($total == 0) {
-    $total = 1;
-  } // avoid division by zero
+  if ($total == 0) $total = 1;
 
-  // MAIN QUERY
   $conditionsSql = "SELECT diseaseName, COUNT(*) AS count
                     FROM conditions_with_disease_name
                     $where
@@ -214,20 +203,18 @@ try {
   // ========================
   // FINAL RESPONSE
   // ========================
-  echo json_encode(
-    [
-      "status" => true,
-      "data" => [
-        "stats" => $stats,
-        "dateDistribution" => $dateDistribution,
-        "conditions" => $conditions,
-      ],
+  echo json_encode([
+    "status" => true,
+    "data" => [
+      "stats" => $stats,
+      "dateDistribution" => $dateDistribution,
+      "conditions" => $conditions,
     ],
-    JSON_UNESCAPED_UNICODE
-  );
+  ]);
+
 } catch (Exception $e) {
   echo json_encode([
     "status" => false,
-    "message" => $e->getMessage(),
+    "message" => $e->getMessage(), // 🔴 shows exact error
   ]);
 }
