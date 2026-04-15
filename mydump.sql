@@ -1,4 +1,3 @@
-
 /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19-12.2.2-MariaDB, for Android (aarch64)
 --
@@ -38,7 +37,7 @@ CREATE TABLE `conditions` (
   KEY `created_by` (`created_by`),
   CONSTRAINT `conditions_ibfk_1` FOREIGN KEY (`patientID`) REFERENCES `patients` (`patientID`) ON DELETE CASCADE,
   CONSTRAINT `conditions_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1253 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1298 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1203,7 +1202,51 @@ INSERT INTO `conditions` VALUES
 (1249,1148,NULL,NULL,24,1,'2026-04-13 14:09:35'),
 (1250,1149,NULL,NULL,10,1,'2026-04-13 14:09:35'),
 (1251,1150,NULL,NULL,10,1,'2026-04-13 14:09:35'),
-(1252,1151,NULL,NULL,9,1,'2026-04-13 14:09:35');
+(1252,1151,NULL,NULL,9,1,'2026-04-13 14:09:35'),
+(1254,1153,'','',9,1,'2026-04-14 06:41:13'),
+(1255,1154,'','',24,1,'2026-04-14 06:42:23'),
+(1256,1155,'','',24,1,'2026-04-14 06:45:55'),
+(1257,1156,'','',24,1,'2026-04-14 06:47:08'),
+(1258,1157,'','',9,1,'2026-04-14 06:47:53'),
+(1259,1158,'','',10,1,'2026-04-14 06:48:30'),
+(1260,1159,'','',9,1,'2026-04-14 06:49:23'),
+(1261,1160,'','',10,1,'2026-04-14 06:52:30'),
+(1262,1160,'','',72,1,'2026-04-14 06:52:30'),
+(1263,1161,'','',9,1,'2026-04-14 06:53:21'),
+(1264,1162,'MRDT','Positive',7,1,'2026-04-14 06:54:26'),
+(1265,1163,'','',42,1,'2026-04-14 06:56:34'),
+(1266,1163,'','',9,1,'2026-04-14 06:56:34'),
+(1267,1164,'','',10,1,'2026-04-14 06:57:14'),
+(1268,1165,'','',24,1,'2026-04-14 06:57:57'),
+(1269,1166,'','',9,1,'2026-04-14 07:00:13'),
+(1270,1167,'MRDT','Positive',7,1,'2026-04-14 07:01:13'),
+(1271,1168,'','',9,1,'2026-04-14 07:01:50'),
+(1272,1169,'','',10,1,'2026-04-14 07:02:23'),
+(1273,1170,'','',10,1,'2026-04-14 07:02:59'),
+(1274,1171,'','',8,1,'2026-04-14 07:03:45'),
+(1275,1172,'','',24,1,'2026-04-14 07:05:43'),
+(1276,1172,'','',57,1,'2026-04-14 07:05:43'),
+(1277,1173,'','',61,1,'2026-04-14 07:06:49'),
+(1278,1174,'','',9,1,'2026-04-14 07:09:48'),
+(1279,1175,'','',42,1,'2026-04-14 07:24:45'),
+(1280,1176,'','',10,1,'2026-04-14 07:25:14'),
+(1281,1177,'','',10,1,'2026-04-14 07:25:46'),
+(1282,1178,'','',9,1,'2026-04-14 07:27:33'),
+(1283,1179,'','',9,1,'2026-04-14 07:28:17'),
+(1284,1180,'MRDT','Positive',7,1,'2026-04-14 07:29:29'),
+(1285,1181,'','',9,1,'2026-04-14 07:30:21'),
+(1286,1182,'','',24,1,'2026-04-14 07:30:58'),
+(1287,1183,'','',10,1,'2026-04-14 07:31:36'),
+(1288,1184,'','',8,1,'2026-04-14 07:32:10'),
+(1289,1185,'','',24,1,'2026-04-14 07:32:41'),
+(1290,1186,'','',57,1,'2026-04-14 07:33:18'),
+(1291,1187,'','',9,1,'2026-04-14 07:34:06'),
+(1292,1188,'','',8,1,'2026-04-14 07:34:45'),
+(1293,1189,'','',9,1,'2026-04-14 07:35:21'),
+(1294,1190,'','',24,1,'2026-04-14 07:35:53'),
+(1295,1191,'','',9,1,'2026-04-14 07:36:36'),
+(1296,1192,'','',10,1,'2026-04-14 07:37:04'),
+(1297,1193,'','',8,1,'2026-04-14 07:38:15');
 /*!40000 ALTER TABLE `conditions` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -1220,6 +1263,7 @@ SET character_set_client = utf8mb4;
 /*!50001 CREATE VIEW `conditions_with_disease_name` AS SELECT
  1 AS `id`,
   1 AS `patientID`,
+  1 AS `visit_date`,
   1 AS `test`,
   1 AS `result`,
   1 AS `diseaseID`,
@@ -1578,7 +1622,7 @@ CREATE TABLE `patients` (
   KEY `idx_name` (`name`),
   KEY `created_by` (`created_by`),
   CONSTRAINT `patients_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1152 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1194 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2604,7 +2648,48 @@ INSERT INTO `patients` VALUES
 (1148,1014,'2026-04-13','',1,'Male','Not Done',54,1,'2026-04-13 14:09:35'),
 (1149,1015,'2026-04-13','',0,'Negative, Female','Not Done',49,1,'2026-04-13 14:09:35'),
 (1150,1016,'2026-04-13','',4,'Negative, Female','Not Done',48,1,'2026-04-13 14:09:35'),
-(1151,1017,'2026-04-13','',0,'Negative, Female','Not Done',43,1,'2026-04-13 14:09:35');
+(1151,1017,'2026-04-13','',0,'Negative, Female','Not Done',43,1,'2026-04-13 14:09:35'),
+(1153,1018,'2026-04-13','',35,'FNP','not_done',4,1,'2026-04-14 06:41:13'),
+(1154,1019,'2026-04-13','',1,'Male','not_done',4,1,'2026-04-14 06:42:23'),
+(1155,1020,'2026-04-13','',3,'Male','not_done',4,1,'2026-04-14 06:45:55'),
+(1156,1021,'2026-04-13','',0,'FNP','not_done',6,1,'2026-04-14 06:47:08'),
+(1157,1022,'2026-04-13','',17,'FNP','not_done',6,1,'2026-04-14 06:47:53'),
+(1158,1023,'2026-04-13','',0,'Male','not_done',4,1,'2026-04-14 06:48:30'),
+(1159,1024,'2026-04-13','',19,'FNP','not_done',4,1,'2026-04-14 06:49:23'),
+(1160,1025,'2026-04-13','',6,'Male','not_done',4,1,'2026-04-14 06:52:30'),
+(1161,1026,'2026-04-13','',10,'FNP','not_done',4,1,'2026-04-14 06:53:21'),
+(1162,1027,'2026-04-13','',5,'FNP','not_done',5,1,'2026-04-14 06:54:26'),
+(1163,1028,'2026-04-13','',17,'FNP','not_done',4,1,'2026-04-14 06:56:34'),
+(1164,1029,'2026-04-13','',0,'FNP','not_done',4,1,'2026-04-14 06:57:14'),
+(1165,1030,'2026-04-13','',1,'FNP','not_done',4,1,'2026-04-14 06:57:57'),
+(1166,1031,'2026-04-13','',29,'FNP','not_done',4,1,'2026-04-14 07:00:13'),
+(1167,1032,'2026-04-13','Amina Zimbiri',10,'FNP','not_done',4,1,'2026-04-14 07:01:13'),
+(1168,1033,'2026-04-13','',70,'FNP','not_done',5,1,'2026-04-14 07:01:50'),
+(1169,1034,'2026-04-13','',0,'FNP','not_done',5,1,'2026-04-14 07:02:23'),
+(1170,1035,'2026-04-13','',1,'FNP','not_done',5,1,'2026-04-14 07:02:59'),
+(1171,1036,'2026-04-13','',22,'FNP','not_done',4,1,'2026-04-14 07:03:45'),
+(1172,1037,'2026-04-13','',1,'FNP','not_done',4,1,'2026-04-14 07:05:43'),
+(1173,1038,'2026-04-13','',0,'FNP','not_done',4,1,'2026-04-14 07:06:49'),
+(1174,1039,'2026-04-13','',52,'FNP','prev_pos_art',4,1,'2026-04-14 07:09:48'),
+(1175,1040,'2026-04-13','',35,'FNP','not_done',4,1,'2026-04-14 07:24:45'),
+(1176,1041,'2026-04-13','',0,'Male','not_done',4,1,'2026-04-14 07:25:14'),
+(1177,1042,'2026-04-13','',0,'Male','not_done',4,1,'2026-04-14 07:25:46'),
+(1178,1043,'2026-04-13','',31,'FNP','prev_pos_art',4,1,'2026-04-14 07:27:33'),
+(1179,1044,'2026-04-13','',25,'FNP','not_done',4,1,'2026-04-14 07:28:17'),
+(1180,1045,'2026-04-13','Shamila Alindo',10,'FNP','not_done',4,1,'2026-04-14 07:29:29'),
+(1181,1046,'2026-04-13','',8,'FNP','not_done',4,1,'2026-04-14 07:30:21'),
+(1182,1047,'2026-04-13','',13,'FNP','not_done',4,1,'2026-04-14 07:30:58'),
+(1183,1048,'2026-04-13','',2,'FNP','not_done',4,1,'2026-04-14 07:31:36'),
+(1184,1049,'2026-04-13','',15,'FNP','not_done',5,1,'2026-04-14 07:32:10'),
+(1185,1050,'2026-04-13','',2,'Male','not_done',5,1,'2026-04-14 07:32:41'),
+(1186,1051,'2026-04-13','',0,'Male','not_done',4,1,'2026-04-14 07:33:18'),
+(1187,1052,'2026-04-13','',59,'FNP','not_done',5,1,'2026-04-14 07:34:06'),
+(1188,1053,'2026-04-13','',17,'Male','not_done',5,1,'2026-04-14 07:34:45'),
+(1189,1054,'2026-04-13','',50,'FNP','not_done',5,1,'2026-04-14 07:35:21'),
+(1190,1055,'2026-04-13','',22,'FP','not_done',5,1,'2026-04-14 07:35:53'),
+(1191,1056,'2026-04-13','',15,'FP','not_done',5,1,'2026-04-14 07:36:36'),
+(1192,1057,'2026-04-13','',3,'FNP','not_done',4,1,'2026-04-14 07:37:04'),
+(1193,1058,'2026-04-13','',20,'FNP','not_done',4,1,'2026-04-14 07:38:15');
 /*!40000 ALTER TABLE `patients` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -2623,7 +2708,7 @@ CREATE TABLE `refresh_tokens` (
   `token` text DEFAULT NULL,
   `expires_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=125 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2742,7 +2827,22 @@ INSERT INTO `refresh_tokens` VALUES
 (106,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY2OTI5NDZ9.3nm26AoDBINwga0rygDei3sRfMt4SCrQkdmc3eH8Pbw','2026-04-20 15:49:06'),
 (107,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY2OTM5MTl9.h0QDFfUmjOoFqG5VkfbZHA9A3xrNPyVx3AX0aAMngoo','2026-04-20 16:05:19'),
 (108,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY2OTY1OTd9.et1XjWYrSUIyKoNOeCq2X1dXokuwEycnv9RA54EBT4c','2026-04-20 16:49:57'),
-(109,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY2OTcxMTV9.HgltkAw0cLoVbdDoUwBksCrqEfiOwep8UYcZwq5Lwy0','2026-04-20 16:58:35');
+(109,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY2OTcxMTV9.HgltkAw0cLoVbdDoUwBksCrqEfiOwep8UYcZwq5Lwy0','2026-04-20 16:58:35'),
+(110,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY2OTg2Mzl9.jYM4kWCGU_KLBFQUEH8YnP6rQJ_jphELSbjoRTcSX2M','2026-04-20 17:23:59'),
+(111,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY2OTk0NTN9.sioELeabbI5RfIwmCKftZlIoAmUOTYrRyrsYdCuoKsg','2026-04-20 17:37:33'),
+(112,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3MDA3MDZ9.s70DPA4qIhLaiPD4WcG_JDSO80l-JiJZePPO3MI8vkM','2026-04-20 17:58:26'),
+(113,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3MDI3NzR9.r3X6h4uN4S1_pohzHUXLkWOSut-J4BTQU2IyaKESWyU','2026-04-20 18:32:54'),
+(114,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3MDM4MDB9.1VN7UmVqsx9UiGsaRZGOhiPpXMQPiPzt57QLgQF0ejA','2026-04-20 18:50:00'),
+(115,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3NTI5NjJ9.ry7RHXMjgM-dbquVY7JASqAy6h8EBGIN-m1gt4rtDYc','2026-04-21 08:29:22'),
+(116,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3ODIzNzd9.E9--ybviV11CZTCpfchpIjTrCCy7-uCsO5O_lWEGyhM','2026-04-21 16:39:37'),
+(117,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3ODUzNTF9.D-HQINw-CLAvq42IhjZwiSohbkhlA8e-kQunnSAxm7k','2026-04-21 17:29:11'),
+(118,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3OTE3OTJ9.5rJlZgP_YogSUWW7DKvAsmUgGEI2YfU3bdFg820SMbI','2026-04-21 19:16:32'),
+(119,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3OTE5MTl9.Aw38-ptIE76xPeo8XVc4Kagh_cpmACjLNrFSssiZn8Y','2026-04-21 19:18:39'),
+(120,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3OTM4MTN9.uq18jxQWb1zareHgZezh_oyEyzw-rsFy7ycXybgVsw8','2026-04-21 19:50:13'),
+(121,2,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NzY3OTM5MzR9.CNmokvpRBGNYlvpqYrrMZhawdbD-LRpC32ZVxxEdXuQ','2026-04-21 19:52:14'),
+(122,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3OTM5NTZ9.SxBDqHC_XCpWzqdV5G-6UnFcjfaryg_iMtbWB5a3MJY','2026-04-21 19:52:36'),
+(123,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3OTY1OTJ9.dy1Cgc95adPrjg37Olk2zn1J4rwOzUTdivaxtfTbM60','2026-04-21 20:36:32'),
+(124,1,'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NzY3OTY2MDB9.AMwqkGeKmANJlrqBetwEkuEBzLmHH5Pc_OrFQ3FwyBc','2026-04-21 20:36:40');
 /*!40000 ALTER TABLE `refresh_tokens` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -3020,7 +3120,51 @@ INSERT INTO `treatments_given` VALUES
 (113,30,1,'2026-04-07 14:03:08'),
 (113,31,1,'2026-04-07 14:03:08'),
 (114,21,1,'2026-04-07 14:03:08'),
-(114,28,1,'2026-04-07 14:03:08');
+(114,28,1,'2026-04-07 14:03:08'),
+(1254,16,1,'2026-04-14 06:41:13'),
+(1255,23,1,'2026-04-14 06:42:23'),
+(1256,23,1,'2026-04-14 06:45:55'),
+(1257,23,1,'2026-04-14 06:47:08'),
+(1258,16,1,'2026-04-14 06:47:53'),
+(1259,26,1,'2026-04-14 06:48:30'),
+(1260,16,1,'2026-04-14 06:49:23'),
+(1261,26,1,'2026-04-14 06:52:30'),
+(1262,60,1,'2026-04-14 06:52:30'),
+(1263,16,1,'2026-04-14 06:53:21'),
+(1264,65,1,'2026-04-14 06:54:26'),
+(1265,15,1,'2026-04-14 06:56:34'),
+(1266,16,1,'2026-04-14 06:56:34'),
+(1267,26,1,'2026-04-14 06:57:14'),
+(1268,23,1,'2026-04-14 06:57:57'),
+(1269,16,1,'2026-04-14 07:00:13'),
+(1270,67,1,'2026-04-14 07:01:13'),
+(1271,16,1,'2026-04-14 07:01:50'),
+(1272,26,1,'2026-04-14 07:02:23'),
+(1273,26,1,'2026-04-14 07:02:59'),
+(1274,35,1,'2026-04-14 07:03:45'),
+(1275,23,1,'2026-04-14 07:05:43'),
+(1276,60,1,'2026-04-14 07:05:43'),
+(1277,23,1,'2026-04-14 07:06:49'),
+(1278,16,1,'2026-04-14 07:09:48'),
+(1279,15,1,'2026-04-14 07:24:45'),
+(1280,26,1,'2026-04-14 07:25:14'),
+(1281,26,1,'2026-04-14 07:25:46'),
+(1282,16,1,'2026-04-14 07:27:33'),
+(1283,16,1,'2026-04-14 07:28:17'),
+(1284,67,1,'2026-04-14 07:29:29'),
+(1285,16,1,'2026-04-14 07:30:21'),
+(1286,13,1,'2026-04-14 07:30:58'),
+(1287,26,1,'2026-04-14 07:31:36'),
+(1288,63,1,'2026-04-14 07:32:10'),
+(1289,23,1,'2026-04-14 07:32:41'),
+(1290,60,1,'2026-04-14 07:33:18'),
+(1291,16,1,'2026-04-14 07:34:06'),
+(1292,63,1,'2026-04-14 07:34:45'),
+(1293,16,1,'2026-04-14 07:35:21'),
+(1294,13,1,'2026-04-14 07:35:53'),
+(1295,16,1,'2026-04-14 07:36:36'),
+(1296,26,1,'2026-04-14 07:37:04'),
+(1297,63,1,'2026-04-14 07:38:15');
 /*!40000 ALTER TABLE `treatments_given` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -3149,7 +3293,13 @@ SET AUTOCOMMIT=@OLD_AUTOCOMMIT;
 /*!50001 SET collation_connection      = utf8mb4_uca1400_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `conditions_with_disease_name` AS (select `c`.`id` AS `id`,`c`.`patientID` AS `patientID`,`c`.`test` AS `test`,`c`.`result` AS `result`,`c`.`diseaseID` AS `diseaseID`,`c`.`created_by` AS `created_by`,`c`.`created_at` AS `created_at`,`d`.`diseaseName` AS `diseaseName` from (`conditions` `c` join `diseases` `d`) where `c`.`diseaseID` = `d`.`id`) */;
+/*!50001 VIEW `conditions_with_disease_name` AS (select `c`.`id` AS `id`,`c`.`patientID` AS `patientID`,`p`.`visit_date`
+AS `visit_date`,`c`.`test` AS `test`,`c`.`result` AS `result`,`c`.`diseaseID` AS
+`diseaseID`,`c`.`created_by` AS `created_by`,`c`.`created_at` AS
+`created_at`,`d`.`diseaseName` AS `diseaseName` from (`conditions` `c` join
+`diseases` `d`), `patients` `p` where `c`.`diseaseID` = `d`.`id` and
+`c`.`patientID` =
+`p`.`patientID`) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -3217,4 +3367,4 @@ SET AUTOCOMMIT=@OLD_AUTOCOMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-04-13 17:03:10
+-- Dump completed on 2026-04-14 20:53:06
