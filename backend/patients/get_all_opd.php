@@ -21,18 +21,17 @@ function get_db_rows($conn, $sql)
   return $data;
 }
 
-
 // Get optional patient ID from GET
 $patientID = isset($_GET["id"]) ? intval($_GET["id"]) : null;
 
 // Base SQL for patients
 $sql = "SELECT p.*, v.village 
-        FROM malaria_patients p 
+        FROM patients p 
         LEFT JOIN villages v ON p.villageID = v.id";
 
 // Add patient filter if ID is provided
 if ($patientID !== null) {
-  $sql .= " WHERE p.patientID = $patientID";
+  $sql .= " WHERE p.serialNumber LIKE '$patientID%'";
 }
 
 // Order by serialNumber if not filtered
@@ -53,7 +52,6 @@ foreach ($patientData as $patient) {
                       FROM conditions c
                       LEFT JOIN diseases d ON c.diseaseID = d.id
                       WHERE c.patientID = $pid";
-                      
   $conditionsData = get_db_rows($conn, $conditionsSQL);
 
   $conditions = [];

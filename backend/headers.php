@@ -2,8 +2,8 @@
 $allowed_origins = [
   "http://localhost:5173",
   "http://localhost:5000",
-  "http://10.47.211.208:5000",
-  "http://10.47.211.208:5173",
+  "http://10.65.247.19:5000",
+  "http://10.65.247.19:5173",
 ];
 
 // Check if the request's Origin is in the allowed list

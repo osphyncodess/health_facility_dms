@@ -26,6 +26,8 @@ const PatientDetails = () => {
                     const patient = res.data[0];
                     setConditions(patient.conditions);
                     setPatient(patient);
+
+                    console.log(patient)
                 })
                 .catch(err => console.log(err));
         }, 1);
@@ -58,7 +60,7 @@ const PatientDetails = () => {
                         <span>OPD-{patient.serialNumber}</span>
                     </div>
                     <div>
-                        Visit Date: <span>{patient.date}</span>
+                        Visit Date: <span>{patient.visit_date}</span>
                     </div>
                 </div>
                 <div className="right">

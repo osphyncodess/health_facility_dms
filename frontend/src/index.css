@@ -278,3 +278,14 @@ a:hover {
     transform: rotate(360deg);
   }
 }
+
+/* .badge-span {
+  position: relative;
+}
+
+.badge-value-span {
+  position: absolute;
+  top: '-70px';
+  right: 0;
+  
+} */

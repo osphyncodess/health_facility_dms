@@ -1,162 +1,227 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Offcanvas, Nav } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import {
-    FaTachometerAlt,
-    FaDatabase,
-    FaFileAlt,
-    FaCog,
-    FaChevronDown,
-    FaChevronUp,
-    FaMapMarkerAlt,
-    FaStethoscope,
-    FaNotesMedical,
-    FaUserPlus,
+  FaTachometerAlt,
+  FaDatabase,
+  FaFileAlt,
+  FaCog,
+  FaChevronDown,
+  FaChevronUp,
+  FaMapMarkerAlt,
+  FaStethoscope,
+  FaNotesMedical,
+  FaUserPlus,
+  FaUser,
+  FaBell,
 } from "react-icons/fa";
 
 import { MdBloodtype } from "react-icons/md";
 import { AuthContext } from "../auth/AuthContext";
+import api from "../api";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
-    const [openData, setOpenData] = useState(false);
-    const {isAdmin} = useContext(AuthContext)
+  const [openData, setOpenData] = useState(false);
+  const [openPatients, setOpenPatients] = useState(false);
+  const { isAdmin } = useContext(AuthContext);
+  const [issues, setIssues] = useState(0);
 
-    const linkStyle = ({ isActive }) => ({
-        backgroundColor: isActive ? "#495057" : "transparent",
-        color: "white",
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        padding: "10px 15px",
-        textDecoration: "none",
-        transition: "all 0.2s ease"
-    });
+  const linkStyle = ({ isActive }) => ({
+    backgroundColor: isActive ? "#495057" : "transparent",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "10px 15px",
+    textDecoration: "none",
+    transition: "all 0.2s ease",
+  });
 
-    return (
-      <Offcanvas
-        show={isOpen}
-        onHide={toggleSidebar}
-        backdrop
-        placement="start"
-        style={{
-          width: "250px",
-        }}
-      >
-        <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Menu</Offcanvas.Title>
-        </Offcanvas.Header>
+  useEffect(() => {
+    api.get("/issues/ari_urti.php")
+    .then(res => setIssues(res.data))
+    .catch(e=>console.log(e))
+  }, []);
 
-        <Offcanvas.Body className="bg-dark text-white p-0">
-          <Nav className="flex-column">
-            {/* Dashboard */}
-            <NavLink to="/" style={linkStyle} onClick={toggleSidebar}>
-              <FaTachometerAlt /> Dashboard
-            </NavLink>
+  return (
+    <Offcanvas
+      show={isOpen}
+      onHide={toggleSidebar}
+      backdrop
+      placement="start"
+      style={{
+        width: "250px",
+      }}
+    >
+      <Offcanvas.Header closeButton>
+        <Offcanvas.Title>Menu</Offcanvas.Title>
+      </Offcanvas.Header>
 
-            {/* Data Toggle */}
-            {isAdmin && (
-              <div
-                onClick={() => setOpenData(!openData)}
+      <Offcanvas.Body className="bg-dark text-white p-0">
+        <Nav className="flex-column">
+          {/* Dashboard */}
+          <NavLink to="/" style={linkStyle} onClick={toggleSidebar}>
+            <FaTachometerAlt /> Dashboard
+          </NavLink>
+
+          {/* Data Toggle */}
+          {isAdmin && (
+            <div
+              onClick={() => setOpenData(!openData)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 15px",
+              }}
+            >
+              <span
                 style={{
-                  cursor: "pointer",
                   display: "flex",
+                  gap: "10px",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "10px 15px",
                 }}
               >
-                <span
-                  style={{
-                    display: "flex",
-                    gap: "10px",
-                    alignItems: "center",
-                  }}
-                >
-                  <FaDatabase /> Data
-                </span>
-                <span
-                  style={{
-                    transition: "transform 0.3s",
-                    transform: openData ? "rotate(180deg)" : "rotate(0deg)",
-                  }}
-                >
-                  <FaChevronDown />
-                </span>
-              </div>
-            )}
-
-            {/* Smooth animated dropdown */}
-            {isAdmin && (
-              <div
+                <FaDatabase /> Data
+              </span>
+              <span
                 style={{
-                  maxHeight: openData ? "500px" : "0px",
-                  overflow: "hidden",
-                  transition: "max-height 0.4s ease",
+                  transition: "transform 0.3s",
+                  transform: openData ? "rotate(180deg)" : "rotate(0deg)",
                 }}
               >
-                <div className="ps-3">
-                  <NavLink
-                    to="/villages/create"
-                    style={linkStyle}
-                    onClick={toggleSidebar}
-                  >
-                    <FaMapMarkerAlt /> Add Village
-                  </NavLink>
+                <FaChevronDown />
+              </span>
+            </div>
+          )}
 
-                  <NavLink
-                    to="/treatments/create"
-                    style={linkStyle}
-                    onClick={toggleSidebar}
-                  >
-                    <FaStethoscope /> Add Treatments
-                  </NavLink>
+          {/* Smooth animated dropdown */}
+          {isAdmin && (
+            <div
+              style={{
+                maxHeight: openData ? "500px" : "0px",
+                overflow: "hidden",
+                transition: "max-height 0.4s ease",
+              }}
+            >
+              <div className="ps-3">
+                <NavLink
+                  to="/villages/create"
+                  style={linkStyle}
+                  onClick={toggleSidebar}
+                >
+                  <FaMapMarkerAlt /> Add Village
+                </NavLink>
 
-                  <NavLink
-                    to="/diseases/create"
-                    style={linkStyle}
-                    onClick={toggleSidebar}
-                  >
-                    <FaNotesMedical /> Add Conditions
-                  </NavLink>
-                </div>
+                <NavLink
+                  to="/treatments/create"
+                  style={linkStyle}
+                  onClick={toggleSidebar}
+                >
+                  <FaStethoscope /> Add Treatments
+                </NavLink>
+
+                <NavLink
+                  to="/diseases/create"
+                  style={linkStyle}
+                  onClick={toggleSidebar}
+                >
+                  <FaNotesMedical /> Add Conditions
+                </NavLink>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Add Patient (moved out) */}
-            {isAdmin && (
-              <NavLink
-                to="/patients/create"
-                style={linkStyle}
-                onClick={toggleSidebar}
+          {/* Patients Toggle */}
+          {isAdmin && (
+            <div
+              onClick={() => setOpenPatients(!openPatients)}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 15px",
+              }}
+            >
+              <span
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  alignItems: "center",
+                }}
               >
-                <FaUserPlus /> Add Patient
-                
-              </NavLink>
-            )}
-
-            {isAdmin && (
-              <NavLink
-                to="/labs/create"
-                style={linkStyle}
-                onClick={toggleSidebar}
+                <FaUser /> Patients
+              </span>
+              <span
+                style={{
+                  transition: "transform 0.3s",
+                  transform: openData ? "rotate(180deg)" : "rotate(0deg)",
+                }}
               >
-                <MdBloodtype /> Collect Lab Data
-              </NavLink>
-            )}
+                <FaChevronDown />
+              </span>
+            </div>
+          )}
 
-            {/* Reports */}
-            <NavLink to="/reports" style={linkStyle} onClick={toggleSidebar}>
-              <FaFileAlt /> Reports
-            </NavLink>
+          {/* Smooth animated Patients dropdown */}
+          {isAdmin && (
+            <div
+              style={{
+                maxHeight: openPatients ? "500px" : "0px",
+                overflow: "hidden",
+                transition: "max-height 0.4s ease",
+              }}
+            >
+              <div className="ps-3">
+                <NavLink
+                  to="/patients/create"
+                  style={linkStyle}
+                  onClick={toggleSidebar}
+                >
+                  <FaUserPlus /> Add Patient
+                </NavLink>
 
-            {/* Settings */}
-            <NavLink to="/settings" style={linkStyle} onClick={toggleSidebar}>
-              <FaCog /> Settings
+                <NavLink
+                  to="/patients/manage/"
+                  style={linkStyle}
+                  onClick={toggleSidebar}
+                >
+                  <FaStethoscope /> Manage Patients
+                </NavLink>
+              </div>
+            </div>
+          )}
+
+          {isAdmin && (
+            <NavLink
+              to="/labs/create"
+              style={linkStyle}
+              onClick={toggleSidebar}
+            >
+              <MdBloodtype /> Collect Lab Data
             </NavLink>
-          </Nav>
-        </Offcanvas.Body>
-      </Offcanvas>
-    );
+          )}
+
+          {/* Reports */}
+          <NavLink to="/reports" style={linkStyle} onClick={toggleSidebar}>
+            <FaFileAlt /> Reports
+          </NavLink>
+
+          {/* Settings */}
+          <NavLink to="/settings" style={linkStyle} onClick={toggleSidebar}>
+            <FaCog /> Settings
+          </NavLink>
+
+          {/* Settings */}
+          <NavLink to="/alerts" style={linkStyle} onClick={toggleSidebar}>
+            <FaBell /> <span className="badge-span">Alerts ({issues.ari_over_five + issues.urti_less_five})</span>
+          </NavLink>
+        </Nav>
+      </Offcanvas.Body>
+    </Offcanvas>
+  );
 };
 
 export default Sidebar;

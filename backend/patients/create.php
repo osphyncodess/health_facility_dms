@@ -32,7 +32,7 @@ try {
   $stmt->bind_param(
     "sssissii",
     $p["serialNumber"],
-    $p["visit_date"],
+    $p["date"],
     $name,
     $p["age"],
     $p["gender"],

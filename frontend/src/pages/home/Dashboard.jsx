@@ -36,6 +36,8 @@ import {
   MdOutlineWifiTetheringError,
 } from "react-icons/md";
 
+import { useUI } from "../../layouts/UIProvider";
+
 import { AuthContext } from "../../auth/AuthContext";
 import Alert from "../../components/Alert";
 
@@ -70,6 +72,7 @@ const Loader = () => (
 );
 
 const Dashboard = () => {
+  const {confirm, alert, toast} = useUI()
   const [inm, setInm] = useState("Loading...");
   const [stats, setStats] = useState([
     { title: inm, value: "" },
@@ -79,6 +82,7 @@ const Dashboard = () => {
   ]);
 
   const [dateDistribution, setDateDistribution] = useState([]);
+  const [dateDistributionMalaria, setDateDistributionMalaria] = useState([]);
 
   //alert message states
   const [alertMessage, setAlertMessage] = useState("This is an Alert");
@@ -190,7 +194,12 @@ const Dashboard = () => {
 
           setStats(d.stats);
           setDateDistribution(d.dateDistribution);
+          setDateDistributionMalaria(d.dateDistributionMalaria);
           setConditions(d.conditions);
+          toast({
+            variant: "success",
+            message: "Dashboard Loaded Successfully"
+          })
         }
         setShowSpinner(false);
         setChanged(false);
@@ -224,6 +233,7 @@ const Dashboard = () => {
     let url = "";
 
     setLoadingPatients(true);
+
     switch (thing) {
       case "Patients":
         url = "patients/get_all.php";
@@ -253,7 +263,13 @@ const Dashboard = () => {
     }
 
     api
-      .get(url)
+      .get(url, {
+        params: {
+          filterType,
+          date1,
+          date2,
+        },
+      })
       .then((res) => {
         setPatients(res.data);
         setLoadingPatients(false);
@@ -368,6 +384,7 @@ const Dashboard = () => {
             if (change) {
               fetchData();
             }
+            ful;
           }}
           size="xl"
           backdrop="static"
@@ -379,7 +396,7 @@ const Dashboard = () => {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <table className="table table-striped">
+            <Table responsive className="table table-striped">
               <thead className="table-dark">
                 <tr>
                   <th>OPD Number</th>
@@ -433,6 +450,7 @@ const Dashboard = () => {
                           >
                             <FaEye />
                           </button>
+                          
                           {isAdmin && (
                             <button className="btn btn-danger">
                               <FaTrash />
@@ -444,7 +462,7 @@ const Dashboard = () => {
                   })}
                 </tbody>
               )}
-            </table>
+            </Table>
           </Modal.Body>
           <Modal.Footer style={{ display: "flex", justifyContent: "center" }}>
             {/* Pagination Controls */}
@@ -629,9 +647,9 @@ const Dashboard = () => {
               <Col md={6}>
                 <Card className="shadow-sm">
                   <Card.Body>
-                    <h6>Patient Visits</h6>
+                    <h6>Malaria Patients by Date</h6>
                     <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={dateDistribution}>
+                      <LineChart data={dateDistributionMalaria}>
                         <XAxis dataKey="name" />
                         <YAxis />
                         <Tooltip />
@@ -640,7 +658,7 @@ const Dashboard = () => {
                         <Line
                           type="monotone"
                           dataKey="patients"
-                          stroke="#0d6efd"
+                          stroke="#fd0d0d"
                         />
                       </LineChart>
                     </ResponsiveContainer>

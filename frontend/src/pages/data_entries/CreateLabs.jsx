@@ -41,7 +41,6 @@ const TryExcel = () => {
       type: "select",
       options: ["Positive", "Negative"],
       required: true,
-      default: "Negative"
     },
   ];
 

@@ -1,5 +1,7 @@
 <?php
 require_once $_SERVER["DOCUMENT_ROOT"] . "/headers.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/functions.php";
+
 
 // ========================
 // DB CONNECTION (MySQLi)
@@ -54,82 +56,7 @@ if ($date2 && !isValidDate($date2)) {
 // ========================
 // BUILD WHERE CLAUSE (FIXED)
 // ========================
-function buildDateFilter(
-  $filterType,
-  $date1,
-  $date2,
-  &$params,
-  &$types,
-  $column
-) {
-  switch ($filterType) {
-    case "previous_month":
-      return "WHERE MONTH($column) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH)
-              AND YEAR($column) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)";
 
-    case "specific_date":
-      if ($date1) {
-        $params[] = $date1 . " 00:00:00";
-        $params[] = $date1 . " 23:59:59";
-        $types .= "ss";
-        return "WHERE $column BETWEEN ? AND ?";
-      }
-      break;
-
-    case "between":
-      if ($date1 && $date2) {
-        $params[] = $date1 . " 00:00:00";
-        $params[] = $date2 . " 23:59:59";
-        $types .= "ss";
-        return "WHERE $column BETWEEN ? AND ?";
-      }
-      break;
-
-    case "greater":
-      if ($date1) {
-        $params[] = $date1 . " 00:00:00";
-        $types .= "s";
-        return "WHERE $column >= ?";
-      }
-      break;
-
-    case "less":
-      if ($date1) {
-        $params[] = $date1 . " 23:59:59";
-        $types .= "s";
-        return "WHERE $column <= ?";
-      }
-      break;
-  }
-
-  return "";
-}
-
-// ========================
-// GENERIC FETCH FUNCTION
-// ========================
-function fetchAllSafe($conn, $sql, $params = [], $types = "")
-{
-  $stmt = $conn->prepare($sql);
-
-  if ($params) {
-    $stmt->bind_param($types, ...$params);
-  }
-
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  $data = [];
-  while ($row = $result->fetch_assoc()) {
-    $data[] = $row;
-  }
-
-  return $data;
-}
-
-// ========================
-// TABLE CONFIG
-// ========================
 $table_configs = [
   ["label" => "Patients", "table" => "patients", "date_col" => "visit_date"],
   [
@@ -183,7 +110,7 @@ try {
   }
 
   // ========================
-  // 2. DATE DISTRIBUTION
+  // 2. DATE DISTRIBUTION ALL PATIENTS
   // ========================
   $params = [];
   $types = "";
@@ -209,6 +136,39 @@ try {
 
   foreach ($dateData as $row) {
     $dateDistribution[] = [
+      "name" => $row["d"],
+      "patients" => $row["count"],
+    ];
+  }
+
+
+  // ========================
+  // 2. DATE DISTRIBUTION MALARIA PATIENTS
+  // ========================
+  $params = [];
+  $types = "";
+
+  $where = buildDateFilter(
+    $filterType,
+    $date1,
+    $date2,
+    $params,
+    $types,
+    $patients_date_col
+  );
+
+  $sql = "SELECT DATE($patients_date_col) as d, COUNT(*) as count
+          FROM malaria_patients
+          $where
+          GROUP BY d
+          ORDER BY d DESC";
+
+  $dateData = fetchAllSafe($conn, $sql, $params, $types);
+
+  $dateDistributionMalaria = [];
+
+  foreach ($dateData as $row) {
+    $dateDistributionMalaria[] = [
       "name" => $row["d"],
       "patients" => $row["count"],
     ];
@@ -266,6 +226,7 @@ try {
     "data" => [
       "stats" => $stats,
       "dateDistribution" => $dateDistribution,
+      "dateDistributionMalaria"=> $dateDistributionMalaria,
       "conditions" => $conditions,
     ],
   ]);

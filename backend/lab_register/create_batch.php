@@ -31,7 +31,7 @@ function get_id($tableName, $columnName, $conn, $value)
             // 👉 Insert Patient
             $stmt = $conn->prepare("
                 INSERT INTO lab_register 
-                (serialNumber, date, name, age, gender, result, created_by)
+                (serialNumber, visit_date, name, age, gender, result, created_by)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
 
