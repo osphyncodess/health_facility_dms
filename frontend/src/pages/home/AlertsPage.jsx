@@ -62,48 +62,52 @@ const AlertsPage = () => {
       .catch((e) => console.log(e));
   };
 
-  const handleFix = (conditionID) => {
+  const handleFix = (conditionID, opdNumber) => {
+    setShowModal(false);
     let what = "";
 
     title === "ARI patients Over 5 Years of Age"
       ? (what = "ario")
       : (what = "urtil");
 
-    let data = { id: conditionID, what: what };
-
-    console.log(data);
-
-    setShowSpinner(true);
-    setCurrentID(conditionID);
-
-    const ok = confirm({
-      title: "Fix ARI Issue",
-      message: "Are you sure you want to perform this fix?",
+    confirm({
+      title: what === "ario" ? "Fix ARI Issue!" : "Fix URTI Issue!",
+      message: `Are you sure you want to perform fix for OPD Number ${opdNumber}?`,
       confirmText: "Fix",
       variant: "danger",
       onConfirm: () => {
+        setShowModal(true);
+
+        let data = { id: conditionID, what: what };
+
+        setShowSpinner(true);
+        setCurrentID(conditionID);
         api
           .post("/issuess/ari_urti_fix_one.php", data)
           .then((res) => {
             console.log(res.data);
             fetchData();
             handleClick(what, false);
-            AlertThem("Issue Fixed", "info", 3000);
+            toast({
+              message: "Issue fixed successfully!",
+              variant: "success",
+            });
           })
-          .catch((e) => console.log(e))
+          .catch((e) => {
+            console.log(e);
+            toast({
+              message: "Something went Wrong!",
+              variant: "danger",
+            });
+          })
           .finally(() => {
-            setTimeout(() => {
-              setShowSpinner(false);
-            }, 1000);
+            setShowSpinner(false);
           });
       },
+      onClose: async () => {
+        setShowModal(true);
+      },
     });
-
-    if (ok) {
-      toast({ message: "Issue fixed successfully!", variant: "success" });
-    }else{
-        toast({ message: "Cancelled", variant: "secondary" });
-    }
   };
 
   return (
@@ -136,7 +140,7 @@ const AlertsPage = () => {
                   <td>
                     <Button
                       disabled={showSpinner}
-                      onClick={() => handleFix(d.id)}
+                      onClick={() => handleFix(d.id, d.serialNumber)}
                     >
                       {showSpinner && d.id === currentID ? <Spinner /> : "Fix"}
                     </Button>

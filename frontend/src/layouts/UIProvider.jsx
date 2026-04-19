@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Modal, Button, Toast, ToastContainer, Spinner } from "react-bootstrap";
 
 const UIContext = createContext();
@@ -40,7 +40,11 @@ export const UIProvider = ({ children }) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const closeModal = () => {
+  const closeModal = async () => {
+    if (modal.onClose) {
+      await modal.onClose();
+    }
+
     modal?.resolve(false);
     setModal(null);
     setLoading(false);
@@ -75,9 +79,7 @@ export const UIProvider = ({ children }) => {
           <Modal.Title>{modal?.title || "Message"}</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
-          {modal?.message || "Something happened"}
-        </Modal.Body>
+        <Modal.Body>{modal?.message || "Something happened"}</Modal.Body>
 
         <Modal.Footer>
           {modal?.type === "confirm" ? (
@@ -122,9 +124,7 @@ export const UIProvider = ({ children }) => {
             delay={t.delay}
             autohide
           >
-            <Toast.Body className="text-white">
-              {t.message}
-            </Toast.Body>
+            <Toast.Body className="text-white">{t.message}</Toast.Body>
           </Toast>
         ))}
       </ToastContainer>
