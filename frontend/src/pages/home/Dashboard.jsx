@@ -26,6 +26,9 @@ import {
   Bar,
   PieChart,
   Legend,
+  Pie,
+  LabelList,
+  Cell,
 } from "recharts";
 
 import {
@@ -72,7 +75,7 @@ const Loader = () => (
 );
 
 const Dashboard = () => {
-  const {confirm, alert, toast} = useUI()
+  const { confirm, alert, toast } = useUI();
   const [inm, setInm] = useState("Loading...");
   const [stats, setStats] = useState([
     { title: inm, value: "" },
@@ -80,9 +83,17 @@ const Dashboard = () => {
     { title: inm, value: "" },
     { title: inm, value: "" },
   ]);
-
+  const [labStats, setLabStats] = useState([
+    { title: inm, value: "" },
+    { title: inm, value: "" },
+    { title: inm, value: "" },
+    { title: inm, value: "" },
+  ]);
   const [dateDistribution, setDateDistribution] = useState([]);
   const [dateDistributionMalaria, setDateDistributionMalaria] = useState([]);
+  const [totalAgeBand, setTotalAgeBand] = useState([]);
+  const [mpAgeBand, setMpAgeBand] = useState([]);
+  const [totalConditions, setTotalConditions] = useState(0);
 
   //alert message states
   const [alertMessage, setAlertMessage] = useState("This is an Alert");
@@ -193,13 +204,17 @@ const Dashboard = () => {
           const d = res.data.data;
 
           setStats(d.stats);
+          setLabStats(d.labStats);
           setDateDistribution(d.dateDistribution);
           setDateDistributionMalaria(d.dateDistributionMalaria);
           setConditions(d.conditions);
+          setTotalAgeBand(d.tpAgeBand);
+          setMpAgeBand(d.mpAgeBand);
+          setTotalConditions(d.total_conditions);
           toast({
             variant: "success",
-            message: "Dashboard Loaded Successfully"
-          })
+            message: "Dashboard Loaded Successfully",
+          });
         }
         setShowSpinner(false);
         setChanged(false);
@@ -450,7 +465,7 @@ const Dashboard = () => {
                           >
                             <FaEye />
                           </button>
-                          
+
                           {isAdmin && (
                             <button className="btn btn-danger">
                               <FaTrash />
@@ -540,6 +555,7 @@ const Dashboard = () => {
                   <Form.Select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
+                    className="mb-2"
                   >
                     <option value="">All</option>
                     <option value="previous_month">Previous Month</option>
@@ -561,6 +577,7 @@ const Dashboard = () => {
                       type="date"
                       value={date1}
                       onChange={(e) => setDate1(e.target.value)}
+                      className="mb-2"
                     />
                   </Form.Group>
                 </Col>
@@ -575,6 +592,7 @@ const Dashboard = () => {
                         type="date"
                         value={date1}
                         onChange={(e) => setDate1(e.target.value)}
+                        className="mb-2"
                       />
                     </Form.Group>
                   </Col>
@@ -586,6 +604,7 @@ const Dashboard = () => {
                         type="date"
                         value={date2}
                         onChange={(e) => setDate2(e.target.value)}
+                        className="mb-2"
                       />
                     </Form.Group>
                   </Col>
@@ -594,7 +613,7 @@ const Dashboard = () => {
 
               <Col md={2}>
                 <button
-                  className="btn btn-primary w-100"
+                  className="btn btn-primary w-100 mb-2"
                   onClick={() => fetchData()}
                 >
                   Apply
@@ -609,63 +628,81 @@ const Dashboard = () => {
           </Container>
         )}
         {inm === "Loading..." && (
-          <Container fluid className="p-4">
+          <Container fluid className="p-2">
             {/* STATS */}
-            <Row>
-              {stats.map((s, i) => (
-                <Col md={3} key={i}>
-                  <Card
-                    style={{ cursor: "pointer" }}
-                    className="shadow-sm mb-3"
-                    onClick={() => {
-                      handleStatsClick(s.title);
-                    }}
-                  >
-                    <Card.Body>
-                      <h6>{s.title}</h6>
-                      {showSpinner ? (
-                        <Spinner />
-                      ) : (
-                        <>
-                          <h3
-                            style={{
-                              color: "blue",
-                            }}
-                          >
-                            {s.value}
-                          </h3>
-                        </>
-                      )}
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
+            <Card>
+              <Card.Header>OPD Register Stats</Card.Header>
+              <Card.Body>
+                <Row>
+                  {stats.map((s, i) => (
+                    <Col md={3} key={i}>
+                      <Card
+                        style={{ cursor: "pointer" }}
+                        className="shadow-sm mb-2"
+                        onClick={() => {
+                          handleStatsClick(s.title);
+                        }}
+                      >
+                        <Card.Body>
+                          <h6>{s.title}</h6>
+                          {showSpinner ? (
+                            <Spinner />
+                          ) : (
+                            <>
+                              <h3
+                                style={{
+                                  color: "blue",
+                                }}
+                              >
+                                {s.value}
+                              </h3>
+                            </>
+                          )}
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              </Card.Body>
+            </Card>
+
+            {/* STATS */}
+            <Card className="mt-3">
+              <Card.Header>Lab Register Stats</Card.Header>
+              <Card.Body>
+                <Row>
+                  {labStats.map((s, i) => (
+                    <Col md={3} key={i}>
+                      <Card
+                        style={{ cursor: "pointer" }}
+                        className="shadow-sm mb-2"
+                        onClick={() => {}}
+                      >
+                        <Card.Body>
+                          <h6>{s.title}</h6>
+                          {showSpinner ? (
+                            <Spinner />
+                          ) : (
+                            <>
+                              <h3
+                                style={{
+                                  color: "blue",
+                                }}
+                              >
+                                {s.value}
+                              </h3>
+                            </>
+                          )}
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              </Card.Body>
+            </Card>
 
             {/* CHARTS */}
-            <Row>
-              <Col md={6}>
-                <Card className="shadow-sm">
-                  <Card.Body>
-                    <h6>Malaria Patients by Date</h6>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={dateDistributionMalaria}>
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <legend />
-
-                        <Line
-                          type="monotone"
-                          dataKey="patients"
-                          stroke="#fd0d0d"
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </Card.Body>
-                </Card>
-              </Col>
-
+            <Row className="mt-3">
               <Col md={6}>
                 <Card className="shadow-sm">
                   <Card.Body>
@@ -694,6 +731,111 @@ const Dashboard = () => {
                   </Card.Body>
                 </Card>
               </Col>
+              <Col md={6}>
+                <Card className="shadow-sm">
+                  <Card.Body>
+                    <h6>Malaria Patients by Date</h6>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <LineChart data={dateDistributionMalaria}>
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <legend />
+                        <LabelList dataKey="name" position="top" />
+
+                        <Line
+                          type="monotone"
+                          dataKey="patients"
+                          stroke="#fd0d0d"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+
+            {/*PIE CHARTS*/}
+            <Row className="mt-3">
+              <Col md={6}>
+                <Card className="shadow-sm">
+                  <Card.Body>
+                    <h6>Total Patients Age Band</h6>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <PieChart width={"100%"} height={400}>
+                        <Tooltip />
+                        <legend />
+
+                        <Pie
+                          data={totalAgeBand}
+                          dataKey="value"
+                          nameKey="name"
+                          outerRadius={100}
+                          label
+                        >
+                          {totalAgeBand.map((entry, index) => (
+                            <Cell
+                              key={index}
+                              fill={
+                                ["#0088FE", "#00C49F"][
+                                  index % ["#0088FE", "#00C49F"].length
+                                ]
+                              }
+                            />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Card.Body>
+                </Card>
+              </Col>
+
+              <Col md={6}>
+                <Card className="shadow-sm">
+                  <Card.Body>
+                    <h6>Malaria Patients Age Band</h6>
+                    <ResponsiveContainer
+                      style={
+                        showSpinner && {
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }
+                      }
+                      width="100%"
+                      height={250}
+                    >
+                      {showSpinner && <Spinner />}
+                      {!showSpinner && (
+                        <PieChart width={"100%"} height={400}>
+                          <Tooltip />
+                          <legend />
+
+                          <Pie
+                            data={mpAgeBand}
+                            dataKey="value"
+                            nameKey="name"
+                            fill="#f64040"
+                            outerRadius={100}
+                            label
+                          >
+                            {totalAgeBand.map((entry, index) => (
+                              <Cell
+                                key={index}
+                                fill={
+                                  ["#f92e2e", "#66c7ed"][
+                                    index % ["#f92e2e", "#66c7ed"].length
+                                  ]
+                                }
+                              />
+                            ))}
+                          </Pie>
+                        </PieChart>
+                      )}
+                    </ResponsiveContainer>
+                  </Card.Body>
+                </Card>
+              </Col>
             </Row>
 
             {/* TABLE */}
@@ -701,7 +843,7 @@ const Dashboard = () => {
               <Col>
                 <Card className="shadow-sm">
                   <Card.Body>
-                    <h6>Conditions</h6>
+                    <h6>Conditions ({totalConditions})</h6>
 
                     <Table striped hover responsive>
                       <thead>

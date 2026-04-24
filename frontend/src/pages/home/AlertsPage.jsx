@@ -83,7 +83,7 @@ const AlertsPage = () => {
         setShowSpinner(true);
         setCurrentID(conditionID);
         api
-          .post("/issuess/ari_urti_fix_one.php", data)
+          .post("/issues/ari_urti_fix_one.php", data)
           .then((res) => {
             console.log(res.data);
             fetchData();
@@ -142,7 +142,11 @@ const AlertsPage = () => {
                       disabled={showSpinner}
                       onClick={() => handleFix(d.id, d.serialNumber)}
                     >
-                      {showSpinner && d.id === currentID ? <Spinner /> : "Fix"}
+                      {showSpinner && d.id === currentID ? 
+                      <>
+                         <Spinner size="sm"
+                      /> Processing...
+                      </> : "Fix"}
                     </Button>
                   </td>
                 </tr>

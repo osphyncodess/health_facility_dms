@@ -2,7 +2,6 @@
 require_once $_SERVER["DOCUMENT_ROOT"] . "/headers.php";
 require_once $_SERVER["DOCUMENT_ROOT"] . "/functions.php";
 
-
 // ========================
 // DB CONNECTION (MySQLi)
 // ========================
@@ -28,8 +27,6 @@ AS `visit_date`,`c`.`test` AS `test`,`c`.`result` AS `result`,`c`.`diseaseID` AS
 `diseases` `d`), `patients` `p` where `c`.`diseaseID` = `d`.`id` and
 `c`.`patientID` =
 `p`.`patientID`";
-
-
 
 // ========================
 // GET FILTERS
@@ -65,12 +62,12 @@ $table_configs = [
     "date_col" => "visit_date",
   ],
   [
-    "label" => "MP in La Register",
+    "label" => "MP Linked With LA Register",
     "table" => "malaria_patients_in_la_reg",
     "date_col" => "visit_date",
   ],
   [
-    "label" => "MP Not in La Register",
+    "label" => "MP Not Linked with LA Register",
     "table" => "malaria_patients_not_in_la_reg",
     "date_col" => "visit_date",
   ],
@@ -109,9 +106,7 @@ try {
     ];
   }
 
-  // ========================
-  // 2. DATE DISTRIBUTION ALL PATIENTS
-  // ========================
+
   $params = [];
   $types = "";
 
@@ -123,6 +118,57 @@ try {
     $types,
     $patients_date_col
   );
+
+  //==========================================================================================
+  //LAB STATS
+  //==========================================================================================
+
+  //Total Tests
+  $where_or_and = "";
+
+  $where === "" ? $where_or_and = "WHERE" : $where_or_and = "AND";
+
+
+
+  $lab_configs = [
+    [
+      "label" => "Total MRDT Tests",
+      "sql" => "SELECT COUNT(*) AS count FROM lab_register $where"
+    ],
+    [
+      "label" => "MRDT Pos",
+      "sql" => "SELECT COUNT(*) AS count FROM lab_register $where $where_or_and result = 'Positive'"
+    ],
+    [
+      "label" => "MRDT Pos in OPD Reg",
+      "sql" => "SELECT COUNT(*) AS count FROM lab_register $where $where_or_and result = 'Positive' AND patientID IS NOT NULL"
+    ],
+    [
+      "label" => "MRDT Pos not in OPD Reg",
+      "sql" => "SELECT COUNT(*) AS count FROM lab_register $where $where_or_and result = 'Positive' AND patientID IS NULL"
+    ]
+  ];
+
+
+  $lab_stats = [];
+
+  foreach ($lab_configs as $t) {
+
+    $sql = $t['sql'];
+
+    $result = fetchAllSafe($conn, $sql, $params, $types);
+
+    $lab_stats[] = [
+      "title" => $t["label"],
+      "value" => $result[0]["count"] ?? 0,
+    ];
+  }
+
+
+  // ========================
+  // 2. DATE DISTRIBUTION ALL PATIENTS
+  // ========================
+  
 
   $sql = "SELECT DATE($patients_date_col) as d, COUNT(*) as count
           FROM patients
@@ -140,7 +186,6 @@ try {
       "patients" => $row["count"],
     ];
   }
-
 
   // ========================
   // 2. DATE DISTRIBUTION MALARIA PATIENTS
@@ -218,6 +263,27 @@ try {
     ];
   }
 
+  $sql = "SELECT COUNT(*) as c FROM conditions_with_disease_name $where";
+
+  $total_conditions = fetchAllSafe($conn, $sql, $params, $types)[0]["c"];
+  //=========================
+  // TOTAL PATIENTS AGE BAND
+  //=========================
+
+  $sql = "SELECT age < 5 AS is_less_5, COUNT(*) as count FROM patients $where GROUP BY age < 5";
+
+  $total_patients_age = fetchAllSafe($conn, $sql, $params, $types);
+  $total_ageband = buildPieChart($total_patients_age);
+
+  //=========================
+  // MALARIA PATIENTS AGE BAND
+  //=========================
+
+  $sql = "SELECT age < 5 AS is_less_5, COUNT(*) as count FROM malaria_patients $where GROUP BY age < 5";
+
+  $malaria_patients_age = fetchAllSafe($conn, $sql, $params, $types);
+  $mp_ageband = buildPieChart($malaria_patients_age);
+
   // ========================
   // FINAL RESPONSE
   // ========================
@@ -225,9 +291,13 @@ try {
     "status" => true,
     "data" => [
       "stats" => $stats,
+      "labStats"=> $lab_stats,
       "dateDistribution" => $dateDistribution,
-      "dateDistributionMalaria"=> $dateDistributionMalaria,
+      "dateDistributionMalaria" => $dateDistributionMalaria,
       "conditions" => $conditions,
+      "tpAgeBand" => $total_ageband,
+      "mpAgeBand" => $mp_ageband,
+      "total_conditions" => $total_conditions,
     ],
   ]);
 } catch (Exception $e) {

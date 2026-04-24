@@ -30,194 +30,200 @@ const ManagePatients = lazy(
     () => import("../../pages/patients/ManagePatients")
 );
 const AlertsPage = lazy(() => import("../../pages/home/AlertsPage"));
+import SelectInput from "../../components/SelectInput";
+import DynamicForm from "../../components/DynamicForm";
 
 export const routes = [
-    {
-        element: <MainLayout />,
-        children: [
-            {
-                path: "/login",
-                element: <Login />
-            },
-            {
-                path: "/patients/create/excel-like",
-                element: (
-                    <AdminRoute>
-                        <TryExcel />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: "/labs/create",
-                element: (
-                    <AdminRoute>
-                        <Labs />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: "/patients/create/form",
-                element: (
-                    <AdminRoute>
-                        <DataEntry />
-                    </AdminRoute>
-                )
-            },
+  {
+    element: <MainLayout />,
+    children: [
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/select-input",
+        element: <DynamicForm />,
+      },
+      {
+        path: "/patients/create/excel-like",
+        element: (
+          <AdminRoute>
+            <TryExcel />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/labs/create",
+        element: (
+          <AdminRoute>
+            <Labs />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/patients/create/form",
+        element: (
+          <AdminRoute>
+            <DataEntry />
+          </AdminRoute>
+        ),
+      },
 
-            {
-                path: "/patients/manage",
-                element: (
-                    <AdminRoute>
-                        <ManagePatients />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: "/dashboard",
-                element: <Dashboard />
-            },
+      {
+        path: "/patients/manage",
+        element: (
+          <AdminRoute>
+            <ManagePatients />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
 
-            {
-                path: "/user/create",
-                element: (
-                    <AdminRoute>
-                        <CreateUser />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: "/users/create",
-                element: (
-                    <AdminRoute>
-                        <CreateUser />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: ROUTES.ENTRY.OPR_ENTRY,
-                element: (
-                    <AdminRoute>
-                        <CreatePatients />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: ROUTES.HOME || "/patients/",
-                element: (
-                    <ProtectedRoute>
-                        <Dashboard />
-                    </ProtectedRoute>
-                )
-            },
-            {
-                path: "/patients/",
-                element: (
-                    <ProtectedRoute>
-                        <Dashboard />
-                    </ProtectedRoute>
-                )
-            },
-            {
-                path: "/alerts/",
-                element: (
-                    <ProtectedRoute>
-                        <AlertsPage />
-                    </ProtectedRoute>
-                )
-            },
+      {
+        path: "/user/create",
+        element: (
+          <AdminRoute>
+            <CreateUser />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "/users/create",
+        element: (
+          <AdminRoute>
+            <CreateUser />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: ROUTES.ENTRY.OPR_ENTRY,
+        element: (
+          <AdminRoute>
+            <CreatePatients />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: ROUTES.HOME || "/patients/",
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/patients/",
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/alerts/",
+        element: (
+          <ProtectedRoute>
+            <AlertsPage />
+          </ProtectedRoute>
+        ),
+      },
 
-            {
-                path: "/settings/",
-                element: (
-                    <ProtectedRoute>
-                        <Settings />
-                    </ProtectedRoute>
-                )
-            },
+      {
+        path: "/settings/",
+        element: (
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        ),
+      },
 
-            {
-                path: "/Reports/",
-                element: (
-                    <ProtectedRoute>
-                        <Reports />
-                    </ProtectedRoute>
-                )
-            },
-            {
-                path: "/swipe/",
-                element: <SwipePage />
-            },
-            {
-                path: ROUTES.ENTRY.DISEASE_CREATE,
-                element: (
-                    <AdminRoute>
-                        <ConditionForm />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: ROUTES.ENTRY.VILLAGE_CREATE,
-                element: (
-                    <AdminRoute>
-                        <CreateVillages />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: ROUTES.ENTRY.TREATMENT_CREATE,
-                element: (
-                    <AdminRoute>
-                        <TreatmentForm />
-                    </AdminRoute>
-                )
-            },
-            {
-                path: "patients/:id/",
-                element: (
-                    <ProtectedRoute>
-                        <PatientDetails />
-                    </ProtectedRoute>
-                )
-            }
-        ]
-    },
-    //   {
-    //     element: <AuthLayout />,
-    //     children: [
-    //       {
-    //         path: ROUTES.AUTH.LOGIN,
-    //         element: <LoginPage />,
-    //       },
-    //       {
-    //         path: ROUTES.AUTH.REGISTER,
-    //         element: <RegisterPage />,
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     path: ROUTES.DASHBOARD.ROOT,
-    //     element: (
-    //       <ProtectedRoute>
-    //         <DashboardLayout />
-    //       </ProtectedRoute>
-    //     ),
-    //     children: [
-    //       {
-    //         index: true,
-    //         element: <DashboardPage />,
-    //       },
-    //       {
-    //         path: "users",
-    //         element: <UsersPage />,
-    //       },
-    //       {
-    //         path: "settings",
-    //         element: <SettingsPage />,
-    //       },
-    //     ],
-    //   },
-    {
-        path: "*",
-        element: <NotFoundPage />
-    }
+      {
+        path: "/Reports/",
+        element: (
+          <ProtectedRoute>
+            <Reports />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/swipe/",
+        element: <SwipePage />,
+      },
+      {
+        path: ROUTES.ENTRY.DISEASE_CREATE,
+        element: (
+          <AdminRoute>
+            <ConditionForm />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: ROUTES.ENTRY.VILLAGE_CREATE,
+        element: (
+          <AdminRoute>
+            <CreateVillages />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: ROUTES.ENTRY.TREATMENT_CREATE,
+        element: (
+          <AdminRoute>
+            <TreatmentForm />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "patients/:id/",
+        element: (
+          <ProtectedRoute>
+            <PatientDetails />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+  //   {
+  //     element: <AuthLayout />,
+  //     children: [
+  //       {
+  //         path: ROUTES.AUTH.LOGIN,
+  //         element: <LoginPage />,
+  //       },
+  //       {
+  //         path: ROUTES.AUTH.REGISTER,
+  //         element: <RegisterPage />,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     path: ROUTES.DASHBOARD.ROOT,
+  //     element: (
+  //       <ProtectedRoute>
+  //         <DashboardLayout />
+  //       </ProtectedRoute>
+  //     ),
+  //     children: [
+  //       {
+  //         index: true,
+  //         element: <DashboardPage />,
+  //       },
+  //       {
+  //         path: "users",
+  //         element: <UsersPage />,
+  //       },
+  //       {
+  //         path: "settings",
+  //         element: <SettingsPage />,
+  //       },
+  //     ],
+  //   },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
 ];

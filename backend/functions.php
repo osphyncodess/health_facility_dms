@@ -15,6 +15,38 @@ function get_db_rows($conn, $sql)
     return $data;
 }
 
+function buildPieChart($data){
+  $count = count($data);
+
+  $ageband = [];
+
+  if( $count == 2){
+    $ageband = [
+      ["name"=>"Over 5", "value"=> $data[0]["count"]],
+      ["name"=>"Less 5", "value"=> $data[1]["count"]]
+    ];
+  }else if($count == 0){
+    $ageband = [
+      ["name"=>"Over 5", "value"=> 0],
+      ["name"=>"Less 5", "value"=> 0]
+    ];
+  }else {
+    if($data[0]["is_less_5"] == 0){
+      $ageband = [
+        ["name"=>"Over 5", "value"=> $data[0]["count"]],
+        ["name"=>"Less 5", "value"=> 0]
+      ];
+    }else {
+      $ageband = [
+        ["name"=>"Over 5", "value"=> 0],
+        ["name"=>"Less 5", "value"=> $data[1]["count"]]
+      ];
+    }
+  }
+  
+  return $ageband;
+}
+
 function buildDateFilter(
   $filterType,
   $date1,
