@@ -31,7 +31,7 @@ const ManagePatients = lazy(
 );
 const AlertsPage = lazy(() => import("../../pages/home/AlertsPage"));
 import SelectInput from "../../components/SelectInput";
-import DynamicForm from "../../components/DynamicForm";
+import PatientEditForm from "../../components/patients/PatientEditForm";
 
 export const routes = [
   {
@@ -43,7 +43,7 @@ export const routes = [
       },
       {
         path: "/select-input",
-        element: <DynamicForm />,
+        element: <PatientEditForm />,
       },
       {
         path: "/patients/create/excel-like",

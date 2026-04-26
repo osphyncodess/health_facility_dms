@@ -1,151 +1,42 @@
-import { Form } from "react-bootstrap";
-import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { Label } from "recharts";
-import { useState, useEffect } from "react";
-import api from "../api";
-
-const DynamicForm = ({
-  data = [
-    {
-      type: "date",
-      key: "visit_date",
-      tableName: "patients",
-      label: "Visit Date",
-    },
-    {
-      type: "number",
-      key: "serialNumber",
-      tableName: "patients",
-      label: "OPD Number",
-    },
-    {
-      type: "text",
-      key: "name",
-      tableName: "patients",
-      label: "Name",
-    },
-
-    {
-      type: "select-many",
-      key: "gender",
-      tableName: "patients",
-      options: [
-        { value: "Male", label: "Male" },
-        { value: "Positive, Female", label: "Positive, Female" },
-      ],
-      label: "Gender",
-    },
-
-    {
-      type: "number",
-      key: "age",
-      tableName: "patients",
-      label: "Age",
-    },
-
-    {
-      type: "select-one",
-      key: "village",
-      tableName: "patients",
-      options: [
-        { value: "Male", label: "Male" },
-        { value: "Positive, Female", label: "Positive, Female" },
-      ],
-      label: "Village",
-    },
-  ],
-  onSubmit,
-}) => {
-  const { handleSubmit, control } = useForm({});
-  const [patient, setPatient] = useState({});
-
-  useEffect(() => {
-    setTimeout(() => {
-      api
-        .get(`/patients/get_all.php?id=${1550}`)
-        .then((res) => {
-          const patient = res.data[0];
-          setPatient(patient);
-
-          console.log(patient["serialNumber"]);
-        })
-        .catch((err) => console.log(err));
-    }, 1);
-  }, []);
-
-  const submit = (data) => {
-    console.log(data);
+const DynamicForm = ({ schema, form, setForm, onSubmit }) => {
+  const handleChange = (key, value) => {
+    setForm((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
+
   return (
-    <div className="p-4">
-      <Form onSubmit={handleSubmit(submit)}>
-        {data.map((d) => {
-
-          const defaultValue = patient[d.key]
-
+    <Form onSubmit={onSubmit} className="m-3">
+      {schema.map((field) => {
+        if (field.type === "select") {
           return (
-            <div key={d.key}>
-              {(d.type === "text" ||
-                d.type === "number" ||
-                d.type === "date") && (
-                <Form.Group>
-                  <Form.Label>{d.label}</Form.Label>
-                  <Controller
-                    name={d.key}
-                    control={control}
-                    defaultValue={defaultValue}
-                    render={({ field }) => (
-                      <Form.Control {...field} type={d.type} />
-                    )}
-                  />
-                </Form.Group>
-              )}
+            <Form.Group key={field.key}>
+              <Form.Label>{field.label || field.key}</Form.Label>
 
-              {d.type === "select-one" && (
-                <Form.Group>
-                  <Form.Label>{d.label}</Form.Label>
-                  <Controller
-                    name="singleSelect"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        options={d.options}
-                        isSearchable
-                        placeholder="Select one..."
-                      />
-                    )}
-                  />
-                </Form.Group>
-              )}
-
-              {d.type === "select-many" && (
-                <Form.Group>
-                  <Form.Label>{d.label}</Form.Label>
-                  <Controller
-                    name="singleSelect"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        options={d.options}
-                        isMulti
-                        isSearchable
-                        placeholder="Select one..."
-                      />
-                    )}
-                  />
-                </Form.Group>
-              )}
-            </div>
+              <Select
+                options={field.options}
+                value={field.options.find((o) => o.value === form[field.key])}
+                onChange={(option) => handleChange(field.key, option.value)}
+              />
+            </Form.Group>
           );
-        })}
-      </Form>
-    </div>
+        }
+
+        return (
+          <Form.Group key={field.key}>
+            <Form.Label>{field.label || field.key}</Form.Label>
+
+            <Form.Control
+              type={field.type}
+              value={form[field.key] || ""}
+              onChange={(e) => handleChange(field.key, e.target.value)}
+            />
+          </Form.Group>
+        );
+      })}
+
+      <Form.Control type="submit" className="btn btn-primary" />
+    </Form>
   );
 };
-
-export default DynamicForm;
